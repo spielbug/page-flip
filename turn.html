@@ -127,10 +127,10 @@
         var rs = getRotatedSize(w, h, angle)
         //_flipper.removeAttr('style');
 
+        // angle 검증
         // distance 검증
-        if(distance>_w) distance=_w
         var pageWidth = Math.abs(1/Math.cos(angle)*distance)
-        //if(pageWidth>_w) distance =  _w * Math.abs(Math.cos(angle)) * 2
+        if(pageWidth>_w) distance =  _w * Math.abs(Math.cos(angle))
 
         var rpos = _right.position()
         _flipper.css({
@@ -167,15 +167,15 @@
         if(!div.fn) div = $(div)
         var topMargin = (rh-_h)/2
 
-        console.log('폭의 대각계산분', Math.cos(angle)*_w)
-        console.log('이동분 보정', distance, Math.cos(angle)*_w-distance)
-        console.log('역코사인값', (Math.cos(angle)*_w-distance)/Math.cos(angle))
+//        console.log('폭의 대각계산분', Math.cos(angle)*_w)
+//        console.log('이동분 보정', distance, Math.cos(angle)*_w-distance)
+//        console.log('역코사인값', (Math.cos(angle)*_w-distance)/Math.cos(angle))
         var rcx = _w - (Math.cos(angle)*_w-distance)/Math.cos(angle)
         var rcy = 0
-        console.log('회전중심', rcx)
+//        console.log('회전중심', rcx)
         var fdTop = Math.tan(angle)*(Math.cos(angle)*_w-distance)
         var fdLeft = rw-(_w - (Math.cos(angle)*_w-distance)/Math.cos(angle))
-        console.log('distance,fdTop,fdLeft',distance, fdTop, fdLeft)
+//        console.log('distance,fdTop,fdLeft',distance, fdTop, fdLeft)
         var transformOrigin = (fdLeft)+'px 0px'
 
         if(angle<0) {
@@ -183,7 +183,7 @@
             rcy = _h;
             console.log('MINUS')
         }
-        console.log('center y',rcy)
+//        console.log('center y',rcy)
 /*
         console.log('angle',angle)
         console.log('_w',_w)
@@ -192,7 +192,7 @@
         console.log('fdTop',fdTop)
         console.log('fdLeft',distance)
 */
-        console.log('transform-origin',transformOrigin)
+//        console.log('transform-origin',transformOrigin)
 
 
         var wrapper = div.parent()
@@ -205,10 +205,10 @@
             //'transform':' rotateZ(0deg)',
             'transform-origin':rcx+'px '+rcy+'px',
         })
-
+        div.text('distance:'+distance)
     }
     make('#fb')
-/*
+
     var startPoint=undefined;
     $('body').on('mousedown',function(ev){
         console.log(ev.pageX, ev.pageY)
@@ -228,6 +228,6 @@
     $('body').on('mouseup',function(ev) {
         startPoint = undefined
     })
-*/
+
 </script>
 </html>
