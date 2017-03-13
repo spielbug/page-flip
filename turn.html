@@ -136,7 +136,7 @@
 
         // limit distance
         var pageWidth = Math.abs(1/Math.cos(angle)*distance)
-        if(pageWidth>_w) distance =  _w * Math.abs(Math.cos(angle))
+        //if(pageWidth>_w) distance =  _w * Math.abs(Math.cos(angle))
 
         var sidePosition = _right.position()
         _flipper.css({
@@ -146,12 +146,13 @@
         _flipper.width(rs.w)
         _flipper.height(rs.h)
         _flipper.css({
-            'transform':'rotateZ('+(angle)+'rad) translate('+(-distance)+'px)',
+            'transform':'rotateZ('+(angle)+'rad) translate('+(distance)+'px)',
             //'transform':'rotateZ('+rad2deg(angle)+'deg)',
         })
 
         reformDiv('#page1', rs.w, rs.h, -angle, distance)
-        reformFlippingDiv('#page2', rs.w, rs.h, -angle, distance)
+        if(distance>0) reformFlippingDivLeft('#page2', rs.w, rs.h, -angle, distance)
+        else reformFlippingDivRight('#page2', rs.w, rs.h, -angle, distance)
     }
 
     function reformDiv(div, dw, dh, angle, distance) {
@@ -164,23 +165,45 @@
             'top':'0px',
             'left': '0px',
             'z-index':1,
-            'transform':'translate('+(distance+left)+'px, '+top+'px) rotateZ('+(angle)+'rad)'
+            'transform':'translate('+(-distance+left)+'px, '+top+'px) rotateZ('+(angle)+'rad)'
             //'transform':'translate('+left+'px, '+top+'px) rotateZ('+rad2deg(angle)+'deg)',
         })
     }
 
-    function reformFlippingDiv(div, rw, rh, angle, distance) {
+    function reformFlippingDivLeft(div, rw, rh, angle, distance) {
         if(!div.fn) div = $(div)
         var topMargin = (rh-_h)/2
 
-//        console.log('폭의 대각계산분', Math.cos(angle)*_w)
-//        console.log('이동분 보정', distance, Math.cos(angle)*_w-distance)
-//        console.log('역코사인값', (Math.cos(angle)*_w-distance)/Math.cos(angle))
-        var rcx = _w - (Math.cos(angle)*_w-distance)/Math.cos(angle)
+        var rcx = _w - (Math.cos(angle)*_w+distance)/Math.cos(angle)
+        rcx = _w + rcx
         var rcy = 0
-        var fdTop = Math.tan(angle)*(Math.cos(angle)*_w-distance)
-        var fdLeft = rw-(_w - (Math.cos(angle)*_w-distance)/Math.cos(angle))
+        var fdTop = -Math.tan(angle)*(Math.cos(angle)*_w-distance)
+        var fdLeft = -rcx
+console.log(distance, rcx, fdLeft, fdTop)
+        if(angle>0) {
+            fdTop = topMargin*2+fdTop
+            rcy = _h;
+        }
 
+        var wrapper = div.parent()
+        wrapper.appendTo(_flipper)
+        wrapper.css({
+            'z-index':2,
+            'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
+            'transform-origin':rcx+'px '+rcy+'px',
+        })
+    }
+
+    function reformFlippingDivRight(div, rw, rh, angle, distance) {
+        if(!div.fn) div = $(div)
+        var topMargin = (rh-_h)/2
+
+        var rcx = _w - (Math.cos(angle)*_w+distance)/Math.cos(angle)
+        //var rcx = -distance
+        var rcy = 0
+        var fdTop = Math.tan(angle)*(Math.cos(angle)*_w+distance)
+        var fdLeft = rw-rcx
+console.log(distance, rcx, fdLeft)
         if(angle<0) {
             fdTop = topMargin*2+fdTop
             rcy = _h;
@@ -194,6 +217,7 @@
             'transform-origin':rcx+'px '+rcy+'px',
         })
     }
+
     make('#fb')
 
     var startPoint=undefined;
@@ -203,7 +227,7 @@
     })
     $('body').on('mousemove',function(ev){
         if(startPoint) {
-            var dx = startPoint.x-ev.pageX
+            var dx = ev.pageX-startPoint.x
             var dy = ev.pageY-startPoint.y
             var angle = -Math.atan2(dy, dx)
             var distance = Math.sqrt(dx*dx + dy*dy)
