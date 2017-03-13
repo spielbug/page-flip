@@ -122,13 +122,10 @@
     }
 
     function reformFlipper(w, h, angle, distance) {
-        // angle : 최초 클릭후 이동점과의 각도
-        // distance : 최초 클릭후 이동점과의 거리 (추후 거리는 제한해야 한다)
         var rs = getRotatedSize(w, h, angle)
         //_flipper.removeAttr('style');
 
-        // angle 검증
-        // distance 검증
+        // limit distance
         var pageWidth = Math.abs(1/Math.cos(angle)*distance)
         if(pageWidth>_w) distance =  _w * Math.abs(Math.cos(angle))
 
@@ -172,40 +169,21 @@
 //        console.log('역코사인값', (Math.cos(angle)*_w-distance)/Math.cos(angle))
         var rcx = _w - (Math.cos(angle)*_w-distance)/Math.cos(angle)
         var rcy = 0
-//        console.log('회전중심', rcx)
         var fdTop = Math.tan(angle)*(Math.cos(angle)*_w-distance)
         var fdLeft = rw-(_w - (Math.cos(angle)*_w-distance)/Math.cos(angle))
-//        console.log('distance,fdTop,fdLeft',distance, fdTop, fdLeft)
-        var transformOrigin = (fdLeft)+'px 0px'
 
         if(angle<0) {
             fdTop = topMargin*2+fdTop
             rcy = _h;
-            console.log('MINUS')
         }
-//        console.log('center y',rcy)
-/*
-        console.log('angle',angle)
-        console.log('_w',_w)
-        console.log('rw',rw)
-        console.log('distance',distance)
-        console.log('fdTop',fdTop)
-        console.log('fdLeft',distance)
-*/
-//        console.log('transform-origin',transformOrigin)
-
 
         var wrapper = div.parent()
         wrapper.appendTo(_flipper)
         wrapper.css({
-            //'left':fdLeft,
-            //'top':fdTop,
             'z-index':2,
             'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
-            //'transform':' rotateZ(0deg)',
             'transform-origin':rcx+'px '+rcy+'px',
         })
-        div.text('distance:'+distance)
     }
     make('#fb')
 
