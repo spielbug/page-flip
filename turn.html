@@ -138,10 +138,10 @@
         var pageWidth = Math.abs(1/Math.cos(angle)*distance)
         if(pageWidth>_w) distance =  _w * Math.abs(Math.cos(angle))
 
-        var rpos = _right.position()
+        var sidePosition = _right.position()
         _flipper.css({
-            'left':(rpos.left-(rs.w-_w)/2),
-            'top':(rpos.top-(rs.h-_h)/2)
+            'left':(sidePosition.left-(rs.w-_w)/2),
+            'top':(sidePosition.top-(rs.h-_h)/2)
         })
         _flipper.width(rs.w)
         _flipper.height(rs.h)
