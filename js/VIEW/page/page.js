@@ -294,7 +294,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                 pageContainer.appendTo(wrapper)
                 grad.appendTo(wrapper)
             }
-            if(PAGE_CURRENT_NUMBER <=0 || PAGE_CURRENT_NUMBER > PAGE_TOTAL_NUMBER) return;
+            if(PAGE_CURRENT_NUMBER <0 || PAGE_CURRENT_NUMBER > PAGE_TOTAL_NUMBER) return;
             getPageHTMLData2(PAGE_CURRENT_NUMBER, function(str) {
                 showPageOrShowCover(strPageContainer, PAGE_CURRENT_NUMBER, callback);
                 //writeFrameDocument($('#leftPageFrame')[0], parseInt(PAGE_CURRENT_NUMBER))
@@ -303,25 +303,25 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
         },
         appendFrameDocument = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
 
-            var callback = function(result) {
-                return;
-                console.log(result.width()+'/'+ result.height(),
-                    ViewerManager.bookContainerWidth+'/'+ViewerManager.bookContainerHeight)
+            var callback = function(arg) {
+                if(arg.query === 'visible') {
+                    return true
+                }
             }
 
             // get current page
-            console.log(ViewerManager.PAGE_CURRENT_NUMBER +'/'+ ViewerManager.PAGE_TOTAL_NUMBER)
+            // console.log(ViewerManager.PAGE_CURRENT_NUMBER +'/'+ ViewerManager.PAGE_TOTAL_NUMBER)
             // 홀더에 들어갈 페이지들은
             // 페이번호 - 3 ~ 페이지번호 + 2
             // 없는 페이지는 로딩하지 않는다.
-            var holder=1
+            var holder=0
             for(var i=PAGE_CURRENT_NUMBER-3; i<PAGE_CURRENT_NUMBER+3; i++) {
-                //if(i<=0 || i>PAGE_TOTAL_NUMBER) continue;
-                //console.log(i)
-                appendFrameDocument2(i, PAGE_TOTAL_NUMBER, 'page'+(holder++),callback)
+                appendFrameDocument2(i, PAGE_TOTAL_NUMBER, 'page'+(++holder), function(arg) {
+                    if(arg.query === 'visible') {
+                        if(holder==3 || holder==4) return true
+                    }
+                })
             }
-
-
 
             // 이하 사용 안함
             return;
@@ -385,6 +385,8 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                     setCoverPage(PAGE_CURRENT_NUMBER);
                 }
                 writeFrameDocument(PageframeDocument, parseInt(PAGE_CURRENT_NUMBER));
+            } else if(PAGE_CURRENT_NUMBER==0) {
+                setCoverPage(PAGE_CURRENT_NUMBER);
             } else {
                 writeFrameDocument(PageframeDocument, parseInt(PAGE_CURRENT_NUMBER));
             }
@@ -525,7 +527,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                     });
 
                     responsiveUI.setResponsiveScale(frameName, pageFrameElement);
-                    $(frameName).css("visibility", "visible");
+                    //$(frameName).css("visibility", "visible");
 
                     log("p_userid=" + ViewerManager.userInfo.userId + "&p_contsid=" + ViewerManager.userInfo.cntsId + "&p_itemid=" + ViewerManager.userInfo.itemId);
                     // GetMultiInfo 전체 조회 API [판서, 메모, 링크]
@@ -547,7 +549,6 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                             break;
                     }
 
-                    $(frameName).css("visibility", "visible");
                     bookmark.initBookmarkIcon(frameName, PAGE_CURRENT_NUMBER);
 
                     if (frameName == "#leftPageFrame") {
@@ -569,7 +570,11 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                 log("@ iFrame contents null error : " + e);
             }
 
-            if(callback) callback(el)
+            if(callback) {
+                var visible = false;
+                if(callback) visible = callback({query:'visible'})
+                if(visible) $(frameName).css("visibility", "visible");
+            }
         },
 
         pageLoading = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
