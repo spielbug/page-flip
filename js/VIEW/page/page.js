@@ -269,22 +269,24 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
         // 이를 위해 로직을 변경
         // 사실상의 entry point 로 간주함
         appendFrameDocument2 = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER,strPageContainer) {
-            console.log(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER)
+            //console.log(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER)
             getPageHTMLData2(PAGE_CURRENT_NUMBER, function(str) {
-                console.log(str)
+                //console.log(str)
                 showPageOrShowCover(strPageContainer, PAGE_CURRENT_NUMBER);
                 //writeFrameDocument($('#leftPageFrame')[0], parseInt(PAGE_CURRENT_NUMBER))
                 //responsiveUI.setResponsiveScale('#leftPageFrame', PageframeDocument)
             })
         },
         appendFrameDocument = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
-            appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'page1')
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'page2')
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+2, PAGE_TOTAL_NUMBER, 'page3')
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+3, PAGE_TOTAL_NUMBER, 'page4')
-            $('#page2').css({'margin-left':'150px', 'border':'solid silver 1px'})
-            $('#page3').css({'margin-left':'300px', 'border':'solid silver 1px'})
-            $('#page4').css({'margin-left':'450px', 'border':'solid silver 1px'})
+            appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'leftPageFrame')
+            appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'rightPageFrame')
+            // appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'page1')
+            // appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'page2')
+            // appendFrameDocument2(PAGE_CURRENT_NUMBER+2, PAGE_TOTAL_NUMBER, 'page3')
+            // appendFrameDocument2(PAGE_CURRENT_NUMBER+3, PAGE_TOTAL_NUMBER, 'page4')
+            // $('#page2').css({'margin-left':'150px', 'border':'solid silver 1px'})
+            // $('#page3').css({'margin-left':'300px', 'border':'solid silver 1px'})
+            // $('#page4').css({'margin-left':'450px', 'border':'solid silver 1px'})
             return;
             log("@ appendFrameDocument...");
 
