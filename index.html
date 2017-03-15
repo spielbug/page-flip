@@ -124,12 +124,14 @@
 				<div id="content">
 					<div id="pages">
 						<div id="fb" style="border:1px blue solid;">
-							<iframe id='leftPageFrame' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
-							<iframe id='rightPageFrame' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
-							<!--<iframe id='page1' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>-->
-							<!--<iframe id='page2' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>-->
-							<!--<iframe id='page3' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>-->
-							<!--<iframe id='page4' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>-->
+							<!--<iframe id='leftPageFrame' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>-->
+							<!--<iframe id='rightPageFrame' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>-->
+							<iframe id='page1' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
+							<iframe id='page2' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
+							<iframe id='page3' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
+							<iframe id='page4' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
+							<iframe id='page5' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
+							<iframe id='page6' frameborder='0' scrolling='no' style='visibility: hidden; overflow: hidden;'></iframe>
 						</div>
 <!--
 						<div id='gras'>
@@ -224,9 +226,11 @@
 		var Flip = function(){
             var _w, _h, _flipper, _left, _right;
             function make(container) {
+                // metric
                 container = $(container)
-                _w = $('#leftPageFrame').width()
-                _h = $('#leftPageFrame').height()
+				var metricDiv = $('#page2')
+                _w = metricDiv.width()
+                _h = metricDiv.height()
                 container.width(_w*2+5)
                 container.height(_h)
                 container.css({
@@ -234,61 +238,24 @@
                 })
 
                 // make side
-                _left = makeDiv(_w, _h, 'left-side')
-                _left.css({
-                    position:'absolute',
-                    border:'blue 2px dashed'
-                })
-                _right = makeDiv(_w, _h, 'right-side')
-                _right.css({
-                    position:'absolute',
-                    left:_w+'px',
-                    border:'blue 2px dashed'
-                })
-
-                // backup
-                var htmlLeft = $('#leftPageFrame')[0].contentDocument.body.innerHTML
-                var htmlRight = $('#rightPageFrame')[0].contentDocument.body.innerHTML
-
-                var childs = container.children()
-                var len=childs.length
-                for(var i = 0; i<len; i++) {
-                    var child = $(childs[len-i-1]) // access in reversed order
-                    var html = child[0].contentDocument.body.innerHTML
-                    // make wrapper
-                    var wrapper=$('<DIV>').addClass('fb-wrapper')
-                    wrapper.css({
-                        position : 'absolute',
-                        width : _w,
-                        height: _h
+				if(!_left) {
+                    _left = makeDiv(_w, _h, 'left-side')
+                    _left.css({
+                        position:'absolute',
+                        border:'blue 2px dashed'
                     })
-                    _right.append(wrapper)
-                    child.detach();
-                    child.appendTo(wrapper)
-                    var grad=$('<div>').addClass('gradient')
-                    grad.css({
-                        position : 'absolute',
-                        width : _w,
-                        height: _h
+                    _right = makeDiv(_w, _h, 'right-side')
+                    _right.css({
+                        position:'absolute',
+                        left:_w+'px',
+                        border:'blue 2px dashed'
                     })
-                    grad.appendTo(wrapper)
+                    container.append(_left)
+                    container.append(_right)
+                    makeFlipper(container)
+				}
 
-                    console.log(child[0].contentDocument)
-                    //wrapper.append(child)
-                    //console.log(child)
-                }
-
-
-                container.append(_left)
-                container.append(_right)
-                makeFlipper(container)
-
-                //restore
-                $('#rightPageFrame').css('margin-left','0')
-                $('#leftPageFrame')[0].contentDocument.body.innerHTML = htmlLeft
-                $('#rightPageFrame')[0].contentDocument.body.innerHTML = htmlRight
-
-                startFlip('#leftPageFrame','#rightPageFrame')
+                startFlip('#page5','#page6')
                 return 'done'
             }
 
@@ -311,33 +278,19 @@
                 div.height(h)
                 return div
             }
-            function deg2rad(deg) {
-                return deg/180*Math.PI
-            }
-
-            function rad2deg(rad) {
-                return rad*180/Math.PI
-            }
 
             function startFlip(div1, div2) {
-                //backup html
-                var htmlLeft = $('#leftPageFrame')[0].contentDocument.body.innerHTML
-                var htmlRight = $('#rightPageFrame')[0].contentDocument.body.innerHTML
+                div1 = div1.fn?div1:$(div1)
+                div2 = div2.fn?div2:$(div2)
 
-                $('#leftPageFrame').parent().appendTo(_flipper)
-                $('#rightPageFrame').parent().appendTo(_flipper)
+                div1.appendTo(_flipper)
+                div2.appendTo(_flipper)
 
-
-                $('#leftPageFrame')[0].contentDocument.body.innerHTML = htmlLeft
-                $('#rightPageFrame')[0].contentDocument.body.innerHTML = htmlRight
             }
 
             function endFlip(div1, div2) {
                 div1 = div1.fn?div1:$(div1)
                 div2 = div2.fn?div2:$(div2)
-
-                var htmlLeft = $('#leftPageFrame')[0].contentDocument.body.innerHTML
-                var htmlRight = $('#rightPageFrame')[0].contentDocument.body.innerHTML
 
                 div1.parent().css({
                     transform:'',
@@ -351,12 +304,8 @@
                     top:'0',
                 })
 
-                $('#leftPageFrame').parent().appendTo(_left)
-                $('#rightPageFrame').parent().appendTo(_right)
-
-
-                $('#leftPageFrame')[0].contentDocument.body.innerHTML = htmlLeft
-                $('#rightPageFrame')[0].contentDocument.body.innerHTML = htmlRight
+                div1.parent().appendTo(_left)
+                div2.parent().appendTo(_right)
 
             }
 
@@ -376,7 +325,7 @@
             function reformFlipper(w, h, angle, distance) {
                 w = w | _w
                 h = h | _h
-                $('#rightPageFrame').css('margin-left','0')
+                $('#page6').css('margin-left','0')
                 //console.log(w,h,angle,distance)
                 var rs = getRotatedSize(w, h, angle)
                 //_flipper.removeAttr('style');
@@ -408,9 +357,9 @@
                     //'transform':'rotateZ('+rad2deg(angle)+'deg)',
                 })
 
-                reformDiv('#leftPageFrame', rs.w, rs.h, -angle, distance)
-                if(distance>0) reformFlippingDivLeft('#rightPageFrame', rs.w, rs.h, -angle, distance)
-                else reformFlippingDivRight('#rightPageFrame', rs.w, rs.h, -angle, distance)
+                reformDiv('#page5', rs.w, rs.h, -angle, distance)
+                if(distance>0) reformFlippingDivLeft('#page6', rs.w, rs.h, -angle, distance)
+                else reformFlippingDivRight('#page6', rs.w, rs.h, -angle, distance)
             }
 
             function reformDiv(div, dw, dh, angle, distance) {
@@ -590,10 +539,17 @@
 			 */
 			return {
 			    make : make,
-
+				reform : reformFlipper
 			}
 		}
 		_flip = Flip()
+        function deg2rad(deg) {
+            return deg/180*Math.PI
+        }
+
+        function rad2deg(rad) {
+            return rad*180/Math.PI
+        }
 	</script>
 	</body>
 </html>

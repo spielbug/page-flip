@@ -104,7 +104,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
         // 보여줄 페이지의 HTML 데이터를 가져온다.
         // 만약 캐싱되지 않은 컨텐트라면 링크, 소스등의 경로를 수정해서 캐시에 저장한다.
         // 만약 캐싱된 컨텐트라면 캐시에서 가져온다.
-        getPageHTMLData = function (pageMODE, PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
+        getPageHTMLData = function (pageMODE, PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, callback) {
             var pageCtlNum = pageMODE === "SINGLE" ? 0 : 1;
             var leftPageframeDocument, rightPageframeDocument, leftframeTimer, rightframeTimer;
 
@@ -160,7 +160,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                             ViewerManager.pageHTMLData[parseInt(PAGE_CURRENT_NUMBER) - pageCtlNum][0] = "Cached";
                             ViewerManager.pageHTMLData[parseInt(PAGE_CURRENT_NUMBER) - pageCtlNum][1] = replaceData;
 
-                            showPageOrShowCover('leftPageFrame', PAGE_CURRENT_NUMBER);
+                            showPageOrShowCover('leftPageFrame', PAGE_CURRENT_NUMBER, callback);
                         },
                         error: function (err) {
                             log("@ getPageHTMLData ajax error : " + err);
@@ -173,7 +173,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                 }
                 case "Cached" : {
                     log("@@ leftPageFrame ============================= Cached!");
-                    showPageOrShowCover('leftPageFrame', PAGE_CURRENT_NUMBER);
+                    showPageOrShowCover('leftPageFrame', PAGE_CURRENT_NUMBER, callback);
 
                     break;
                 }
@@ -264,29 +264,66 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                 }
             }
         },
+        checkDomRendered = function(jq, callback) {
+            if($(jq)[0]) {
+                callback($(jq)[0]);
+            }
+            else {
+                setTimeout(function() {checkDomRendered(jq)}, 10000)
+            }
+        },
         // 2017-3-14 elinsoft
         // 페이지터닝 이펙트를 구현하기 위해서는 최대 6페이지가 화면에 상주해 있어야 한다.
         // 이를 위해 로직을 변경
         // 사실상의 entry point 로 간주함
-        appendFrameDocument2 = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER,strPageContainer) {
+        appendFrameDocument2 = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER,strPageContainer,callback) {
             //console.log(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER)
+            var pageContainer = $('#'+strPageContainer)
+            var parent = pageContainer.parent()
+            if(parent.attr('class')!='fb-wrapper') {
+                var wrapper=$('<DIV>').addClass('fb-wrapper')
+                wrapper.attr('id','wrapper-'+strPageContainer)
+                wrapper.css({
+                    position : 'absolute',
+                })
+                var grad=$('<div>').addClass('gradient')
+                grad.css({
+                    position : 'absolute',
+                })
+                wrapper.appendTo(parent)
+                pageContainer.appendTo(wrapper)
+                grad.appendTo(wrapper)
+            }
+
             getPageHTMLData2(PAGE_CURRENT_NUMBER, function(str) {
-                //console.log(str)
-                showPageOrShowCover(strPageContainer, PAGE_CURRENT_NUMBER);
+                showPageOrShowCover(strPageContainer, PAGE_CURRENT_NUMBER, callback);
                 //writeFrameDocument($('#leftPageFrame')[0], parseInt(PAGE_CURRENT_NUMBER))
                 //responsiveUI.setResponsiveScale('#leftPageFrame', PageframeDocument)
             })
         },
         appendFrameDocument = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
-            appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'leftPageFrame')
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'rightPageFrame')
-            // appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'page1')
-            // appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'page2')
-            // appendFrameDocument2(PAGE_CURRENT_NUMBER+2, PAGE_TOTAL_NUMBER, 'page3')
-            // appendFrameDocument2(PAGE_CURRENT_NUMBER+3, PAGE_TOTAL_NUMBER, 'page4')
+            var callback = function(result) {
+                return;
+                console.log(result.width()+'/'+ result.height(),
+                    ViewerManager.bookContainerWidth+'/'+ViewerManager.bookContainerHeight)
+            }
+
+            // get current page
+            console.log(ViewerManager.PAGE_CURRENT_NUMBER +'/'+ ViewerManager.PAGE_TOTAL_NUMBER)
+            // appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'leftPageFrame')
+            // appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'rightPageFrame')
+            appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'page1',callback)
+            appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'page2',callback)
+            appendFrameDocument2(PAGE_CURRENT_NUMBER+2, PAGE_TOTAL_NUMBER, 'page3',callback)
+            appendFrameDocument2(PAGE_CURRENT_NUMBER+3, PAGE_TOTAL_NUMBER, 'page4',callback)
+            appendFrameDocument2(PAGE_CURRENT_NUMBER+4, PAGE_TOTAL_NUMBER, 'page5',callback)
+            appendFrameDocument2(PAGE_CURRENT_NUMBER+5, PAGE_TOTAL_NUMBER, 'page6',callback)
             // $('#page2').css({'margin-left':'150px', 'border':'solid silver 1px'})
             // $('#page3').css({'margin-left':'300px', 'border':'solid silver 1px'})
             // $('#page4').css({'margin-left':'450px', 'border':'solid silver 1px'})
+
+
+            // 이하 사용 안함
             return;
             log("@ appendFrameDocument...");
 
@@ -334,27 +371,26 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
         },
         // 페이지 혹은 커버를 보여준다.
         // 페이지를 보여주기 위해 writeFrameDocument 호출
-        showPageOrShowCover = function (pageframe, PAGE_CURRENT_NUMBER) {
+        showPageOrShowCover = function (pageFrame, PAGE_CURRENT_NUMBER, callback) {
             var pageCtlNum = ViewerManager.pageMODE === "SINGLE" ? 0 : 1;
-            var PageframeDocument = document.getElementById(String(pageframe));
+            var PageframeDocument = document.getElementById(String(pageFrame));
 
-            if (pageframe == "leftPageFrame") {
+            if (pageFrame == "leftPageFrame") {
                 if (parseInt(PAGE_CURRENT_NUMBER) - 1 == 0 && ViewerManager.pageMODE == "DOUBLE") {
                     setCoverPage(PAGE_CURRENT_NUMBER);
                 }
                 writeFrameDocument(PageframeDocument, parseInt(PAGE_CURRENT_NUMBER) - pageCtlNum);
-            } else if (pageframe == "rightPageFrame") {
+            } else if (pageFrame == "rightPageFrame") {
                 if (parseInt(PAGE_CURRENT_NUMBER) - 1 == parseInt(ViewerManager.PAGE_TOTAL_NUMBER) && ViewerManager.pageMODE == "DOUBLE") {
                     setCoverPage(PAGE_CURRENT_NUMBER);
                 }
                 writeFrameDocument(PageframeDocument, parseInt(PAGE_CURRENT_NUMBER));
             } else {
-                console.log(PageframeDocument);
                 writeFrameDocument(PageframeDocument, parseInt(PAGE_CURRENT_NUMBER));
             }
 
             // 렌더링 대신 편의상 바로 UI에 띄운다.
-            renderPageFrame('#' + pageframe, PageframeDocument, PAGE_CURRENT_NUMBER, ViewerManager.PAGE_TOTAL_NUMBER);
+            renderPageFrame('#' + pageFrame, PageframeDocument, PAGE_CURRENT_NUMBER, ViewerManager.PAGE_TOTAL_NUMBER, callback);
             //responsiveUI.setResponsiveScale('#' + pageframe, PageframeDocument)
         },
 /*
@@ -388,8 +424,9 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
         },
         // 프레임 내의 컨텐트를 활성화시키는 역할?
         // 프레임의 크기도 정하는 듯
-        renderPageFrame = function (frameName, pageFrameElement, PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
+        renderPageFrame = function (frameName, pageFrameElement, PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, callback) {
             log("@ renderPageFrame...");
+
             function callAjax() {
                 if (String(location.href).match('titanbooks.co.kr') || ViewerManager.CustomizeType == "DEFAULT") {
                     jQuery.ajax({
@@ -403,7 +440,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                 //프레임의 컨텐트가 로드 되지 않았을 경우, 1 milesecond 후에 다시 재 호출한다.
                 if (pageFrameElement.contentWindow.document != null && (pageFrameElement.contentWindow.document.body == undefined || pageFrameElement.contentWindow.document.body == null)) {
                     var frameTimer = setTimeout(function () {
-                        renderPageFrame(frameName, pageFrameElement, PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER);
+                        renderPageFrame(frameName, pageFrameElement, PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, callback);
                         clearTimeout(frameTimer);
                     }, 1);
                 }
@@ -519,9 +556,20 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                     }
                     //ViewerManager.UInormal('show');
                 }
+
+                // resize wrapper and gradient
+                var el = $(pageFrameElement)
+                el.parent().width(el.width())
+                el.parent().height(el.height())
+                el.siblings().width(el.width())
+                el.siblings().height(el.height())
+
+
             } catch (e) {
                 log("@ iFrame contents null error : " + e);
             }
+
+            if(callback) callback(el)
         },
 
         pageLoading = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
