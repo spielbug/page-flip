@@ -254,17 +254,11 @@
 				}
 
 				// move to side
-				$('#page1').parent().appendTo('#left-side')
-                $('#page2').parent().appendTo('#left-side')
-                $('#page3').parent().appendTo('#left-side')
-                $('#page6').parent().appendTo('#right-side')
-                $('#page5').parent().appendTo('#right-side')
-                $('#page4').parent().appendTo('#right-side')
+				$('#page1,#page2,#page3').parent().appendTo('#left-side')
+                $('#page4,#page5,#page6').parent().appendTo('#right-side')
+                $('#page3,#page4').css('visibility','visible')
 
-				//$('#page4').addClass('flip-bottom')
-                //$('#page5').addClass('flip-top')
-                //startFlip('.flip-bottom','.flip-top')
-                $(window).trigger('resize');
+				$(window).trigger('resize');
             }
 
             function makeFlipper(container) {
@@ -300,7 +294,7 @@
                 $(window).trigger('resize');
             }
 
-            function endFlip(div1, div2, cancel) {
+            function endFlip(div1, div2, cancel, direction) {
                 div1 = div1.fn?div1:$(div1)
                 div2 = div2.fn?div2:$(div2)
 
@@ -335,11 +329,11 @@
 
 				if(!cancel) {
 
-                    if(startPoint.direction==-1) ViewerManager.pageLoading(
+                    if(direction==-1) ViewerManager.pageLoading(
                         ViewerManager.PAGE_CURRENT_NUMBER+2,
                         ViewerManager.PAGE_TOTAL_NUMBER
                     )
-                    else if(startPoint.direction==1) ViewerManager.pageLoading(
+                    else if(direction==1) ViewerManager.pageLoading(
                         ViewerManager.PAGE_CURRENT_NUMBER-2,
                         ViewerManager.PAGE_TOTAL_NUMBER
                     )
@@ -610,21 +604,25 @@
                         angle = Math.atan2(-dy, -dx)
                     }
 
-					var equation = function(d, s) {
+                    var direction = startPoint.direction
+					startPoint = undefined;
+                    var equation = function(d, s) {
                         d=Math.abs(d)
-                        return startPoint.direction*(d+s*(2*_w-d))
+                        return direction*(d+s*(2*_w-d))
 					}
 					if(cancel) equation = function(d, s) {
                         return d-s*d
 
 					}
+
+
                     ease(EasingFunctions.easeInOutQuad,
                         function(step){
                             //console.log(angle-step*angle,distance-step*distance)
                             reformFlipper(null, null, angle-step*angle, equation(distance, step))
                         },function(done){
                             console.log('done')
-                            endFlip('.flip-bottom', '.flip-top', cancel)
+                            endFlip('.flip-bottom', '.flip-top', cancel, direction)
                             startPoint = undefined
                         },500,15, 0)
 

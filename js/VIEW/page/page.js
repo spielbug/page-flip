@@ -305,7 +305,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
 
             var callback = function(arg) {
                 if(arg.query === 'visible') {
-                    return true
+                    return false
                 }
             }
 
