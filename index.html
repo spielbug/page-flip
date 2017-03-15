@@ -255,7 +255,7 @@
                     makeFlipper(container)
 				}
 
-                startFlip('#page5','#page6')
+                startFlip('.flip-bottom','.flip-top')
                 return 'done'
             }
 
@@ -283,9 +283,11 @@
                 div1 = div1.fn?div1:$(div1)
                 div2 = div2.fn?div2:$(div2)
 
+				if(!div1[0] || !div2[0]) throw 'no flip-bottom or flip-top'
                 div1.appendTo(_flipper)
                 div2.appendTo(_flipper)
 
+                $(window).trigger('resize');
             }
 
             function endFlip(div1, div2) {
@@ -325,7 +327,7 @@
             function reformFlipper(w, h, angle, distance) {
                 w = w | _w
                 h = h | _h
-                $('#page6').css('margin-left','0')
+                $('.flip-bottom').css('margin-left','0')
                 //console.log(w,h,angle,distance)
                 var rs = getRotatedSize(w, h, angle)
                 //_flipper.removeAttr('style');
@@ -357,9 +359,9 @@
                     //'transform':'rotateZ('+rad2deg(angle)+'deg)',
                 })
 
-                reformDiv('#page5', rs.w, rs.h, -angle, distance)
-                if(distance>0) reformFlippingDivLeft('#page6', rs.w, rs.h, -angle, distance)
-                else reformFlippingDivRight('#page6', rs.w, rs.h, -angle, distance)
+                reformDiv('.flip-bottom', rs.w, rs.h, -angle, distance)
+                if(distance>0) reformFlippingDivLeft('.flip-top', rs.w, rs.h, -angle, distance)
+                else reformFlippingDivRight('.flip-top', rs.w, rs.h, -angle, distance)
             }
 
             function reformDiv(div, dw, dh, angle, distance) {
