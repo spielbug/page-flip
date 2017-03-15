@@ -228,7 +228,7 @@
             function make(container) {
                 // metric
                 container = $(container)
-				var metricDiv = $('#page2')
+				var metricDiv = $('#page4')
                 _w = metricDiv.width()
                 _h = metricDiv.height()
                 container.width(_w*2+5)
@@ -255,6 +255,12 @@
                     makeFlipper(container)
 				}
 
+				// move to side
+				$('#page1,#page2,#page3').parent().appendTo('#right-side')
+                $('#page4,#page5,#page6').parent().appendTo('#right-side')
+				$('#page4').addClass('flip-bottom')
+                $('#page5').addClass('flip-top')
+
                 startFlip('.flip-bottom','.flip-top')
                 return 'done'
             }
@@ -266,6 +272,7 @@
                 _flipper.css({
                     'border':'1px solid red',
                     'position':'absolute',
+					'left' : _w,
                     'overflow':'hidden'
                 })
                 container.append(_flipper)
@@ -284,8 +291,8 @@
                 div2 = div2.fn?div2:$(div2)
 
 				if(!div1[0] || !div2[0]) throw 'no flip-bottom or flip-top'
-                div1.appendTo(_flipper)
-                div2.appendTo(_flipper)
+                $('.flip-top').parent().appendTo(_flipper)
+                $('.flip-bottom').parent().appendTo(_flipper)
 
                 $(window).trigger('resize');
             }
@@ -513,6 +520,15 @@
                     var dy = ev.pageY-startPoint.y
                     var angle = Math.atan2(dy, dx)
                     var distance = Math.sqrt(dx*dx + dy*dy)*2
+
+                    if(startPoint.direction) {
+                        if(startPoint.direction * dx < 0) return;
+                    }
+                    else {
+                        console.log('direction',Math.sign(dx))
+                        startPoint.direction = Math.sign(dx)
+					}
+
                     if(dx<0) {
                         distance=-distance
                         angle = Math.atan2(-dy, -dx)

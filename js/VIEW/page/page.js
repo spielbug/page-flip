@@ -294,7 +294,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
                 pageContainer.appendTo(wrapper)
                 grad.appendTo(wrapper)
             }
-
+            if(PAGE_CURRENT_NUMBER <=0 || PAGE_CURRENT_NUMBER > PAGE_TOTAL_NUMBER) return;
             getPageHTMLData2(PAGE_CURRENT_NUMBER, function(str) {
                 showPageOrShowCover(strPageContainer, PAGE_CURRENT_NUMBER, callback);
                 //writeFrameDocument($('#leftPageFrame')[0], parseInt(PAGE_CURRENT_NUMBER))
@@ -302,6 +302,7 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
             })
         },
         appendFrameDocument = function (PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER) {
+
             var callback = function(result) {
                 return;
                 console.log(result.width()+'/'+ result.height(),
@@ -310,17 +311,16 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
 
             // get current page
             console.log(ViewerManager.PAGE_CURRENT_NUMBER +'/'+ ViewerManager.PAGE_TOTAL_NUMBER)
-            // appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'leftPageFrame')
-            // appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'rightPageFrame')
-            appendFrameDocument2(PAGE_CURRENT_NUMBER, PAGE_TOTAL_NUMBER, 'page1',callback)
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+1, PAGE_TOTAL_NUMBER, 'page2',callback)
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+2, PAGE_TOTAL_NUMBER, 'page3',callback)
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+3, PAGE_TOTAL_NUMBER, 'page4',callback)
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+4, PAGE_TOTAL_NUMBER, 'page5',callback)
-            appendFrameDocument2(PAGE_CURRENT_NUMBER+5, PAGE_TOTAL_NUMBER, 'page6',callback)
-            // $('#page2').css({'margin-left':'150px', 'border':'solid silver 1px'})
-            // $('#page3').css({'margin-left':'300px', 'border':'solid silver 1px'})
-            // $('#page4').css({'margin-left':'450px', 'border':'solid silver 1px'})
+            // 홀더에 들어갈 페이지들은
+            // 페이번호 - 3 ~ 페이지번호 + 2
+            // 없는 페이지는 로딩하지 않는다.
+            var holder=1
+            for(var i=PAGE_CURRENT_NUMBER-3; i<PAGE_CURRENT_NUMBER+3; i++) {
+                //if(i<=0 || i>PAGE_TOTAL_NUMBER) continue;
+                //console.log(i)
+                appendFrameDocument2(i, PAGE_TOTAL_NUMBER, 'page'+(holder++),callback)
+            }
+
 
 
             // 이하 사용 안함
