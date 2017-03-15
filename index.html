@@ -224,7 +224,7 @@
 		<script data-main="js/CONTROL/index" src="libs/require.js"></script>
 	<script>
 		var Flip = function(){
-            var _w, _h, _flipper, _left, _right;
+            var _w, _h, _flipper, _left, _right, _made;
             function make(container) {
                 // metric
                 container = $(container)
@@ -251,6 +251,8 @@
                     container.append(_left)
                     container.append(_right)
                     makeFlipper(container)
+					console.log('==',_made)
+                    _made = true
 				}
 
 				// move to side
@@ -260,6 +262,10 @@
 
 				$(window).trigger('resize');
             }
+
+            function made() {
+                return _made
+			}
 
             function makeFlipper(container) {
                 if(!container.fn) container = $(container)
@@ -644,7 +650,8 @@
 			return {
 			    make : make,
 				reform : reformFlipper,
-				ease : ease
+				ease : ease,
+				made : made
 			}
 		}
 		_flip = Flip()

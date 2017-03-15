@@ -317,6 +317,10 @@ define(['jquery', 'log', 'browser', 'params', 'xml2json', 'loading', 'responsive
             var holder=0
             for(var i=PAGE_CURRENT_NUMBER-3; i<PAGE_CURRENT_NUMBER+3; i++) {
                 appendFrameDocument2(i, PAGE_TOTAL_NUMBER, 'page'+(++holder), function(arg) {
+                    console.log(holder)
+                    if(holder==6 && !_flip.made()) {
+                        setTimeout(function(){_flip.make('#fb')}, 2000)
+                    }
                     if(arg.query === 'visible') {
                         if(holder==3 || holder==4) return true
                     }
