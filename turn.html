@@ -20,7 +20,7 @@
         div {
             width:500px;height:500px;
             border:1px solid black;
-            //overflow: hidden;
+        //overflow: hidden;
         }
         #fb {
             position:relative;
@@ -29,90 +29,35 @@
             margin-top:100px;
         }
         .page {
-            //position:absolute;
+        //position:absolute;
         }
 
     </style>
 </head>
 <body>
 
-<div id="fb" style="">
+<div id="fb">
     <div class="page" id="page1" style="background: teal;">1</div>
-    <!--div class="page" id="page2" style="background: gold;">2</div-->
-    <div id="page2"><iframe src="http://daum.net" width="500" height="500"></iframe></div>
+    <div class="page" id="page2" style="background: gold;">2</div>
+    <!--<div id="page2">-->
+        <!--<iframe src="http://elinsoft.com" width="500" height="500"></iframe>-->
+        <!--<div id="gra" tyle="position:absoltue; width:500px; height:500px; background:rgba(0,0,0,0.1);">-->
+        <!--</div>-->
+    <!--</div>-->
     <div class="page" id="page3" style="background: moccasin;">3</div>
-    <div class="page" id="page4" style="background: darkcyan;">4</div>
+    <div class="page flip-bottom" id="page4" style="background: darkcyan;">4</div>
+    <div class="page flip-top" id="page5" style="background: moccasin;">5</div>
+    <div class="page" id="page6" style="background: darkcyan;">6</div>
 </div>
-<div id="ctl" style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.2);"></div>
+<div id="fb-control" style="position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:10;"></div>
 </body>
 <!-- you will need jquery somewhere -->
 <script src="libs/jquery.js"></script>
 <!-- you don't need this. just for test-->
-<script src="libs/turn.js"></script>
+<script src="flip.js"></script>
 <script>
 
-    var _w, _h, _flipper, _left, _right;
-    function make(container) {
-        container = $(container)
-        _w = container.width()
-        _h = container.height()
-        container.width(_w*2+5)
-        container.css({
-            position : 'relative'
-        })
-
-        // make side
-        _left = makeDiv(_w, _h, 'left-side')
-        _left.css({
-            position:'absolute',
-            border:'blue 2px dashed'
-        })
-        _right = makeDiv(_w, _h, 'right-side')
-        _right.css({
-            position:'absolute',
-            left:_w+'px',
-            border:'blue 2px dashed'
-        })
-
-
-        var childs = container.children()
-        var len=childs.length
-        for(var i = 0; i<len; i++) {
-            var child = $(childs[len-i-1]) // access in reversed order
-            // make wrapper
-            var wrapper=$('<DIV>').addClass('fb-wrapper')
-            wrapper.css({
-                position : 'absolute'
-            })
-            _right.append(wrapper)
-            child.detach();
-            child.appendTo(wrapper)
-            //wrapper.append(child)
-            //console.log(child)
-        }
-
-
-        container.append(_left);
-        container.append(_right);
-
-        // div for flipping
-        _flipper = makeDiv(_w, _h, 'flipper')
-        _flipper.css({
-            'position':'absolute',
-            'overflow':'hidden'
-        })
-        container.append(_flipper)
-
-        return 'done'
-    }
-
-    function makeDiv(w, h, id) {
-        var div = $('<div>')
-        div.attr('id', id)
-        div.width(w)
-        div.height(h)
-        return div
-    }
+    _flip = Flip()
     function deg2rad(deg) {
         return deg/180*Math.PI
     }
@@ -121,142 +66,10 @@
         return rad*180/Math.PI
     }
 
-    function getRotatedSize(w, h, angle) {
-        var x1 = -w/2
-        var x2 = w/2
-        var y1 = -h/2
-        var y2 = h/2
-        var w = Math.max(x2*Math.cos(angle)-y2*Math.sin(angle),
-            x2*Math.cos(angle)-y1*Math.sin(angle))*2
-        var h = Math.max(x1*Math.sin(angle)+y2*Math.cos(angle),
-            x2*Math.sin(angle)+y2*Math.cos(angle))*2
-        return {'w':w, 'h':h }
-    }
-
-    function reformFlipper(w, h, angle, distance) {
-        w = w | _w
-        h = h | _h
-        //console.log(w,h,angle,distance)
-        var rs = getRotatedSize(w, h, angle)
-        //_flipper.removeAttr('style');
-
-        // limit distance
-        var pageWidth = Math.abs(1/Math.cos(angle)*distance)
-        if(pageWidth>_w) distance = Math.sign(distance) * _w * Math.abs(Math.cos(angle))
-
-        var fPos = {}
-        if(distance > 0) {
-            fPos.left = _left.css('left').replace('px','')
-            fPos.top = _left.css('top').replace('px','')
-        }
-        else {
-            fPos.left = _right.css('left').replace('px','')
-            fPos.top = _right.css('top').replace('px','')
-
-        }
-
-        _flipper.css({
-            'left':(fPos.left-(rs.w-_w)/2),
-            'top':(fPos.top-(rs.h-_h)/2)
-        })
-
-        _flipper.width(rs.w)
-        _flipper.height(rs.h)
-        _flipper.css({
-            'transform':'rotateZ('+(angle)+'rad) translate('+(distance)+'px)',
-            //'transform':'rotateZ('+rad2deg(angle)+'deg)',
-        })
-
-        reformDiv('#page1', rs.w, rs.h, -angle, distance)
-        if(distance>0) reformFlippingDivLeft('#page2', rs.w, rs.h, -angle, distance)
-        else reformFlippingDivRight('#page2', rs.w, rs.h, -angle, distance)
-    }
-
-    function startFlip(div1, div2) {
-        if(!div1.fn) div1 = $(div1)
-        if(!div2.fn) div2 = $(div2)
-        //backup html
-        var gra = $('<div>')
-        gra.attr('id','flipper-gradiate')
-        gra.css({
-            width:_w,
-            height:_h,
-        })
-        div2.parent().append(gra)
-        div1.parent().appendTo(_flipper)
-        div2.parent().appendTo(_flipper)
-    }
-
-    function endFlip() {
-
-    }
-
-    function reformDiv(div, dw, dh, angle, distance) {
-        if(!div.fn) div = $(div)
-        var top = (dh-_h)/2
-        var left = (dw-_w)/2
-        var wrapper = div.parent()
-        wrapper.css({
-            'top':'0px',
-            'left': '0px',
-            'width': _w,
-            'height': _h,
-            'z-index':1,
-            'transform':'translate('+(-distance+left)+'px, '+top+'px) rotateZ('+(angle)+'rad)'
-            //'transform':'translate('+left+'px, '+top+'px) rotateZ('+rad2deg(angle)+'deg)',
-        })
-    }
-
-    function reformFlippingDivLeft(div, rw, rh, angle, distance) {
-        if(!div.fn) div = $(div)
-        var topMargin = (rh-_h)/2
-
-        var rcx = _w - (Math.cos(angle)*_w+distance)/Math.cos(angle)
-        rcx = _w + rcx
-        var rcy = 0
-        var fdTop = -Math.tan(angle)*(Math.cos(angle)*_w-distance)
-        var fdLeft = -rcx
-//console.log(distance, rcx, fdLeft, fdTop)
-        if(angle>0) {
-            fdTop = topMargin*2+fdTop
-            rcy = _h;
-        }
-
-        var wrapper = div.parent()
-        wrapper.css({
-            'z-index':2,
-            'width': _w,
-            'height': _h,
-            'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
-            'transform-origin':rcx+'px '+rcy+'px',
-        })
-    }
-
-    function reformFlippingDivRight(div, rw, rh, angle, distance) {
-        if(!div.fn) div = $(div)
-        var topMargin = (rh-_h)/2
-
-        var rcx = _w - (Math.cos(angle)*_w+distance)/Math.cos(angle)
-        //var rcx = -distance
-        var rcy = 0
-        var fdTop = Math.tan(angle)*(Math.cos(angle)*_w+distance)
-        var fdLeft = rw-rcx
-//console.log(distance, rcx, fdLeft)
-        if(angle<0) {
-            fdTop = topMargin*2+fdTop
-            rcy = _h;
-        }
-
-        var wrapper = div.parent()
-        wrapper.css({
-            'z-index':2,
-            'width': _w,
-            'height': _h,
-            'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
-            'transform-origin':rcx+'px '+rcy+'px',
-        })
-    }
-
+    /*
+     EasingFunctions is extracted from open source bezier easing
+     https://github.com/gre/bezier-easing
+     */
     EasingFunctions = {
         // no easing, no acceleration
         linear: function (t) { return t },
@@ -285,51 +98,5 @@
         // acceleration until halfway, then deceleration
         easeInOutQuint: function (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
     }
-
-    function ease(easeFunc, stepFunc, msec, inc, step) {
-        step = step | 30 // default is 30fps
-        if(inc<1) {
-            inc += step/msec
-            var result = easeFunc(inc)
-            stepFunc(result)
-            setTimeout(function(){ease(easeFunc, stepFunc, msec, inc)}, step)
-        }
-        else {
-            stepFunc(1)
-            console.log('done')
-        }
-    }
-
-    //make('#fb')
-    //startFlip('#page1','#page2')
-
-    var startPoint=undefined;
-    $('body').on('mousedown',function(ev){
-        ev.preventDefault()
-        console.log(ev.pageX, ev.pageY)
-        startPoint = {x:ev.pageX, y:ev.pageY}
-    })
-    $('#ctl').on('mousemove',function(ev){
-        console.log('.')
-        if(startPoint) {
-            ev.preventDefault()
-            var dx = ev.pageX-startPoint.x
-            var dy = ev.pageY-startPoint.y
-            var angle = Math.atan2(dy, dx)
-            var distance = Math.sqrt(dx*dx + dy*dy)*2
-            if(dx<0) {
-                distance=-distance
-                angle = Math.atan2(-dy, -dx)
-            }
-            reformFlipper(_w, _h, angle, distance)
-
-        }
-
-    })
-    $('body').on('mouseup',function(ev) {
-        ev.preventDefault()
-        startPoint = undefined
-    })
-
 </script>
 </html>
