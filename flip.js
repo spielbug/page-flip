@@ -6,13 +6,15 @@
 
 var Flip = function(){
     var _w, _h, _flipper, _left, _right, _made;
+    // make each side (left, right) holder and call makeFlipper
+    // make wrapper and gradient to his children div
     function make(container) {
         // metric
         container = $(container)
         var metricDiv = $('#page4')
         _w = metricDiv.width()
         _h = metricDiv.height()
-        container.width(_w*2+5)
+        container.width(_w*2)
         container.height(_h)
         container.css({
             position : 'relative'
@@ -29,7 +31,7 @@ var Flip = function(){
             _right.addClass('side-right')
             _right.css({
                 position:'absolute',
-                left:_w+'px',
+                left:(_w)+'px',
             })
             container.append(_left)
             container.append(_right)
@@ -52,7 +54,11 @@ var Flip = function(){
             // make wrapper
             var wrapper=$('<DIV>').addClass('fb-wrapper')
             wrapper.css({
-                position : 'absolute'
+                position : 'absolute',
+                left:'0px',
+                top:'0px',
+                width:_w,
+                height:_h,
             })
             //_right.append(wrapper)
             child.appendTo(wrapper)
@@ -76,7 +82,10 @@ var Flip = function(){
         // move to side
         $('#page1,#page2,#page3').parent().appendTo('#side-left')
         $('#page4,#page5,#page6').parent().appendTo('#side-right')
-        //$('#page3,#page4').css('visibility','visible')
+        $('#page1,page6').parent().css('z-index','1')
+        $('#page2,page5').parent().css('z-index','2')
+        $('#page3,page4').parent().css('z-index','3')
+
 
         $(window).trigger('resize');
     }
@@ -85,6 +94,8 @@ var Flip = function(){
         return _made
     }
 
+    // make flipper
+    // flipper is div that include flipping div (flip-top) and flipped div (flip-bottom)
     function makeFlipper(container) {
         if(!container.fn) container = $(container)
         // div for flipping
@@ -98,6 +109,7 @@ var Flip = function(){
         container.append(_flipper)
     }
 
+    // make div conveniently
     function makeDiv(w, h, id) {
         var div = $('<div>')
         div.attr('id', id)
@@ -113,7 +125,7 @@ var Flip = function(){
         //if(!div1[0] || !div2[0]) throw 'no flip-bottom or flip-top'
         $('.flip-top').parent().appendTo(_flipper)
         $('.flip-bottom').parent().appendTo(_flipper)
-        $('.flip-top').css('border','2px silver solid')
+        //$('.flip-top').css('border','2px silver solid')
 
         $(window).trigger('resize');
     }
@@ -145,11 +157,11 @@ var Flip = function(){
         $('#page1,#page2,#page3').parent().appendTo('#side-left')
         $('#page4,#page5,#page6').parent().appendTo('#side-right')
 
-        $('#page1,#page2,#page3,#page4,#page5,#page6').removeClass('flip-bottom')
-        $('#page1,#page2,#page3,#page4,#page5,#page6').removeClass('flip-top')
+        $('flip-bottom').removeClass('flip-bottom')
+        $('flip-top').removeClass('flip-top')
 
         //$('#page1,#page2,#page5,#page6').css('visibility','hidden')
-        $('.flip-top').css('border','')
+        //$('.flip-top').css('border','')
 
         if(!cancel) {
 
@@ -189,9 +201,18 @@ var Flip = function(){
 
         // limit distance
         var pageWidth = Math.abs(1/Math.cos(angle)*distance)
-        if(pageWidth>_w) distance = Math.sign(distance) * _w * Math.abs(Math.cos(angle))
+        var sign = (distance>0)? 1:-1;
+        if(pageWidth>_w) distance = sign * _w * Math.abs(Math.cos(angle))
 
-        var fPos = {}
+        var fPos = _right.position()
+        if(distance > 0) {
+            fPos = _left.position()
+        }
+        _flipper.css({
+            'left':(fPos.left-(rs.w-_w)/2),
+            'top':(fPos.top-(rs.h-_h)/2)
+        })
+/*
         if(distance > 0) {
             fPos.left = _left.css('left').replace('px','')
             fPos.top = _left.css('top').replace('px','')
@@ -201,7 +222,7 @@ var Flip = function(){
             fPos.top = _right.css('top').replace('px','')
 
         }
-
+*/
         var fLeft = (fPos.left-(rs.w-_w)/2)
         var fTop = (fPos.top-(rs.h-_h)/2)
         //console.log(fLeft, fTop)
@@ -381,7 +402,7 @@ var Flip = function(){
                 distance=-distance
                 angle = Math.atan2(-dy, -dx)
             }
-            console.log(distance)
+            //console.log(distance)
             reformFlipper(_w, _h, angle, distance)
         }
         //return false;
@@ -409,9 +430,13 @@ var Flip = function(){
                 d=Math.abs(d)
                 return direction*(d+s*(2*_w-d))
             }
-            if(cancel) equation = function(d, s) {
-                return d-s*d
+            var duration = 200
+            if(cancel) {
+                equation = function(d, s) {
+                    return d-s*d
 
+                }
+                duration = 300
             }
 
 
@@ -423,7 +448,7 @@ var Flip = function(){
                     console.log('done')
                     endFlip('.flip-bottom', '.flip-top', cancel, direction)
                     startPoint = undefined
-                },500,15, 0)
+                },duration,15, 0)
 
         }
 
