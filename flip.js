@@ -126,8 +126,9 @@ var Flip = function(){
         $('.flip-top').parent().appendTo(_flipper)
         $('.flip-bottom').parent().appendTo(_flipper)
         //$('.flip-top').css('border','2px silver solid')
+        $('.gradient').show()
 
-        $(window).trigger('resize');
+        //$(window).trigger('resize');
     }
 
     function endFlip(div1, div2, cancel, direction) {
@@ -149,6 +150,7 @@ var Flip = function(){
         $('.gradient').css({
             background : ''
         })
+        $('.gradient').hide()
 
         _flipper.css({
             transform : ''

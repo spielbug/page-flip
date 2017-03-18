@@ -25,7 +25,7 @@
         #fb {
             position:relative;
             margin:auto;
-            margin-top:100px;
+            margin-top:30px;
         }
         .fb-wrapper {
             //box-shadow: -5px -5px 15px rgba(0,0,0,0.1);
@@ -36,23 +36,20 @@
         .page {
         //position:absolute;
         }
-
+        iframe {
+            //transform:'scale(0.25,0.35)'
+        }
     </style>
 </head>
 <body>
 
 <div id="fb">
-    <div class="page" id="page1" style="background: teal;">1</div>
-    <div class="page" id="page2" style="background: gold;">2</div>
-    <!--<div id="page2">-->
-        <!--<iframe src="http://elinsoft.com" width="500" height="500"></iframe>-->
-        <!--<div id="gra" tyle="position:absoltue; width:500px; height:500px; background:rgba(0,0,0,0.1);">-->
-        <!--</div>-->
-    <!--</div>-->
-    <div class="page" id="page3" style="background: moccasin;">3</div>
-    <div class="page flip-bottom" id="page4" style="background: darkcyan;">4</div>
-    <div class="page flip-top" id="page5" style="background: moccasin;">5</div>
-    <div class="page" id="page6" style="background: darkcyan;">6</div>
+    <iframe class="page" id="page1" style="background: teal;">1</iframe>
+    <iframe class="page" id="page2" style="background: gold;">2</iframe>
+    <iframe class="page" id="page3" style="background: moccasin;">3</iframe>
+    <iframe class="page flip-bottom" id="page4" style="background: darkcyan;">4</iframe>
+    <iframe class="page flip-top" id="page5" style="background: moccasin;">5</iframe>
+    <iframe class="page" id="page6" style="background: darkcyan;">6</iframe>
 </div>
 <div id="fb-control" style="position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:10;"></div>
 
@@ -103,6 +100,42 @@
         // acceleration until halfway, then deceleration
         easeInOutQuint: function (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
     }
+
+    $('iframe')
+        .attr('border','0')
+        .attr('cellpadding','0')
+        .attr('cellspacing','0')
+        .attr('frameBorder','0')
+        .attr('seamless','seamless')
+        .attr('width','500')
+        .attr('height','500')
+        .attr('marginheight','0')
+        .attr('marginwidth','0')
+        .attr('vspace','0')
+        .attr('hspace','0')
+        .attr('scrolling','no')
+
+    $('#page1').attr('src','epub/OEBPS/content/page00012.xhtml')
+    $('#page2').attr('src','epub/OEBPS/content/page00013.xhtml')
+    $('#page3').attr('src','epub/OEBPS/content/page00014.xhtml')
+    $('#page4').attr('src','epub/OEBPS/content/page00015.xhtml')
+    $('#page5').attr('src','epub/OEBPS/content/page00016.xhtml')
+    $('#page6').attr('src','epub/OEBPS/content/page00017.xhtml')
+
+    $('iframe').load(function(evt) {
+        var body=this.contentDocument.body
+        var w = parseInt(body.style.width)
+        var h = parseInt(body.style.height)
+        var hr = 500/w
+        var vr = 500/h
+        console.log(hr,vr)
+        $(this).width(w)
+        $(this).height(h)
+        $(this).siblings().width(w)
+        $(this).siblings().height(h)
+
+    })
+
 </script>
 
 </body>
