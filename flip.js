@@ -56,6 +56,20 @@ var Flip = function(){
             })
             //_right.append(wrapper)
             child.appendTo(wrapper)
+
+            // make gradient
+            var gradient = $('<DIV>').addClass('gradient')
+            gradient.css({
+                position : 'absolute',
+                left:'0px',
+                top:'0px',
+                width:_w,
+                height:_h,
+                'z-index':3,
+            })
+            gradient.appendTo(wrapper)
+
+            // add wrapper to container
             wrapper.appendTo(container)
         }
 
@@ -139,14 +153,13 @@ var Flip = function(){
 
         if(!cancel) {
 
-            if(direction==-1) ViewerManager.pageLoading(
-                ViewerManager.PAGE_CURRENT_NUMBER+2,
-                ViewerManager.PAGE_TOTAL_NUMBER
-            )
-            else if(direction==1) ViewerManager.pageLoading(
-                ViewerManager.PAGE_CURRENT_NUMBER-2,
-                ViewerManager.PAGE_TOTAL_NUMBER
-            )
+            if(direction==-1) {
+                // load next page
+            }
+            else if(direction==1){
+                // load previous page
+            }
+
         }
         else {
             $(window).trigger('resize')
@@ -284,14 +297,14 @@ var Flip = function(){
 
         if(distance>0) {
             g.css({
-                background : 'linear-gradient('+(angle-Math.PI/2)+'rad, transparent 0px, transparent '+(distance-150)
-                +'px, rgba(0,0,0,0.2) '+(distance-50)+'px, transparent '+(distance)+'px)'
+                background : 'linear-gradient('+(angle-Math.PI/2)+'rad, transparent 0px, transparent '+(distance-100)
+                +'px, rgba(0,0,0,'+(0.2*(1-distance/_w))+') '+(distance-20)+'px, transparent '+(distance)+'px)'
             })
         }
         else {
             g.css({
-                background : 'linear-gradient('+(angle+Math.PI/2)+'rad, transparent 0px, transparent '+(-distance-150)
-                +'px, rgba(0,0,0,0.2) '+(-distance-50)+'px, transparent '+(-distance)+'px)'
+                background : 'linear-gradient('+(angle+Math.PI/2)+'rad, transparent 0px, transparent '+(-distance-100)
+                +'px, rgba(0,0,0,'+0.2*(1+distance/_w)+') '+(-distance-20)+'px, transparent '+(-distance)+'px)'
             })
         }
     }
