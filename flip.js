@@ -7,7 +7,6 @@
 var Flip = function(){
     var _w, _h, _flipper, _left, _right, _made;
     // make each side (left, right) holder and call makeFlipper
-    // make wrapper and gradient to his children div
     function make(container) {
         // metric
         container = $(container)
@@ -51,29 +50,9 @@ var Flip = function(){
                 continue
 
             }
-            // make wrapper
-            var wrapper=$('<DIV>').addClass('fb-wrapper')
-            wrapper.css({
-                position : 'absolute',
-                left:'0px',
-                top:'0px',
-                width:_w,
-                height:_h,
-            })
-            //_right.append(wrapper)
-            child.appendTo(wrapper)
 
-            // make gradient
-            var gradient = $('<DIV>').addClass('gradient')
-            gradient.css({
-                position : 'absolute',
-                left:'0px',
-                top:'0px',
-                width:_w,
-                height:_h,
-                'z-index':3,
-            })
-            gradient.appendTo(wrapper)
+            // make wrapper
+            var wrapper = makeWrapper(child)
 
             // add wrapper to container
             wrapper.appendTo(container)
@@ -82,12 +61,36 @@ var Flip = function(){
         // move to side
         $('#page1,#page2,#page3').parent().appendTo('#side-left')
         $('#page4,#page5,#page6').parent().appendTo('#side-right')
-        $('#page1,page6').parent().css('z-index','1')
-        $('#page2,page5').parent().css('z-index','2')
-        $('#page3,page4').parent().css('z-index','3')
 
+        //$(window).trigger('resize');
+    }
 
-        $(window).trigger('resize');
+    // make wrapper and wrap chlid
+    // put gradient into wrapper
+    function makeWrapper(child) {
+        var wrapper=$('<DIV>').addClass('fb-wrapper')
+        wrapper.css({
+            position : 'absolute',
+            left:'0px',
+            top:'0px',
+            width:_w,
+            height:_h,
+        })
+        //_right.append(wrapper)
+        child.appendTo(wrapper)
+
+        // make gradient
+        var gradient = $('<DIV>').addClass('gradient')
+        gradient.css({
+            position : 'absolute',
+            left:'0px',
+            top:'0px',
+            width:_w,
+            height:_h,
+            //'z-index':3,
+        })
+        gradient.appendTo(wrapper)
+        return wrapper
     }
 
     function made() {
@@ -104,9 +107,22 @@ var Flip = function(){
             'position':'absolute',
             //'left' : _w,
             'overflow':'hidden',
-            'z-index' : 3
+            //'z-index' : 3
         })
         container.append(_flipper)
+
+        var fb = makeDiv(_w, _h, '')
+        fb.addClass('flip-bottom')
+        var wrapper = makeWrapper(fb)
+        //wrapper.css('z-index','9')
+        wrapper.appendTo(_flipper)
+
+        var ft = makeDiv(_w, _h, '')
+        ft.addClass('flip-top')
+        wrapper = makeWrapper(ft)
+        //wrapper.css('z-index','9')
+        wrapper.appendTo(_flipper)
+
     }
 
     // make div conveniently
@@ -118,13 +134,34 @@ var Flip = function(){
         return div
     }
 
-    function startFlip(div1, div2) {
-        //div1 = div1.fn?div1:$(div1)
-        //div2 = div2.fn?div2:$(div2)
+
+    // href, src, url 요소를 대치한다.
+    function replace(s, prefix) {
+
+        s = s.replace(/src=\"/gi,'src="'+prefix+'')
+        s = s.replace(/href=\"/gi,'href="'+prefix+'')
+        s = s.replace(/url\(\"/gi,'url("'+prefix+'')
+        return s;
+    }
+
+    function startFlip(bottom, top) {
+        bottom = bottom.fn?bottom:$(bottom)
+        top = top.fn?top:$(top)
+
+        $('.flip-bottom').html(replace(
+            bottom[0].contentDocument.head.innerHTML+bottom[0].contentDocument.body.innerHTML,
+            'epub/OEBPS/content/')
+        )
+
+        //$('.flip-bottom').html('Hello, World!')
+        $('.flip-top').html(replace(
+            top[0].contentDocument.head.innerHTML+top[0].contentDocument.body.innerHTML,
+            'epub/OEBPS/content/')
+        )
 
         //if(!div1[0] || !div2[0]) throw 'no flip-bottom or flip-top'
-        $('.flip-top').parent().appendTo(_flipper)
-        $('.flip-bottom').parent().appendTo(_flipper)
+        //$('.flip-top').parent().appendTo(_flipper)
+        //$('.flip-bottom').parent().appendTo(_flipper)
         //$('.flip-top').css('border','2px silver solid')
         $('.gradient').show()
 
@@ -156,11 +193,11 @@ var Flip = function(){
             transform : ''
         })
 
-        $('#page1,#page2,#page3').parent().appendTo('#side-left')
-        $('#page4,#page5,#page6').parent().appendTo('#side-right')
+        //$('#page1,#page2,#page3').parent().appendTo('#side-left')
+        //$('#page4,#page5,#page6').parent().appendTo('#side-right')
 
-        $('flip-bottom').removeClass('flip-bottom')
-        $('flip-top').removeClass('flip-top')
+        //$('flip-bottom').removeClass('flip-bottom')
+        //$('flip-top').removeClass('flip-top')
 
         //$('#page1,#page2,#page5,#page6').css('visibility','hidden')
         //$('.flip-top').css('border','')
@@ -176,7 +213,7 @@ var Flip = function(){
 
         }
         else {
-            $(window).trigger('resize')
+            //$(window).trigger('resize')
         }
     }
 
@@ -253,9 +290,9 @@ var Flip = function(){
         wrapper.css({
             'top':'0px',
             'left': '0px',
-            'width': _w,
-            'height': _h,
-            'z-index':1,
+            //'width': _w,
+            //'height': _h,
+            //'z-index':0,
             'transform':'translate('+(-distance+left)+'px, '+top+'px) rotateZ('+(angle)+'rad)'
             //'transform':'translate('+left+'px, '+top+'px) rotateZ('+rad2deg(angle)+'deg)',
         })
@@ -278,9 +315,9 @@ var Flip = function(){
 
         var wrapper = div.parent()
         wrapper.css({
-            'z-index':2,
-            'width': _w,
-            'height': _h,
+            //'z-index':6,
+            //'width': _w,
+            //'height': _h,
             'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
             'transform-origin':rcx+'px '+rcy+'px',
         })
@@ -304,7 +341,7 @@ var Flip = function(){
 
         var wrapper = div.parent()
         wrapper.css({
-            'z-index':2,
+            'z-index':6,
             'width': _w,
             'height': _h,
             'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
@@ -366,24 +403,24 @@ var Flip = function(){
             startPoint = {x:ev.pageX, y:ev.pageY, direction:1}
             console.log('left clicked')
 //                $('#page1,#page2').css('visibility','visible')
-            $('#page2').addClass('flip-top')
-            $('#page3').addClass('flip-bottom')
-            startFlip('.flip-bottom','.flip-top')
+//            $('#page2').addClass('flip-top')
+//            $('#page3').addClass('flip-bottom')
+            startFlip('#page3','#page2')
         }
         else if(x > rx && x < 2*rx-lx) {
             startPoint = {x:ev.pageX, y:ev.pageY, direction:-1}
             console.log('right clicked')
 //                $('#page5,#page6').css('visibility','visible')
-            $('#page4').addClass('flip-bottom')
-            $('#page5').addClass('flip-top')
-            startFlip('.flip-bottom','.flip-top')
+//            $('#page4').addClass('flip-bottom')
+//            $('#page5').addClass('flip-top')
+            startFlip('#page4','#page5')
         }
         else return;
     })
     $('#fb-control').on('mousemove',function(ev){
         ev.preventDefault()
         ev.stopPropagation()
-        //console.log('control',ev.pageX,ev.pageY)
+        // console.log('control',ev.pageX,ev.pageY)
         if(startPoint) {
             //ev.preventDefault()
             //ev.stopPropagation()
@@ -405,7 +442,9 @@ var Flip = function(){
                 angle = Math.atan2(-dy, -dx)
             }
             //console.log(distance)
-            reformFlipper(_w, _h, angle, distance)
+            setTimeout(function() {
+                reformFlipper(_w, _h, angle, distance)
+            },1)
         }
         //return false;
     })
