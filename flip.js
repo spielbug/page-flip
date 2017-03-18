@@ -191,7 +191,7 @@ var Flip = function(){
 
         var fLeft = (fPos.left-(rs.w-_w)/2)
         var fTop = (fPos.top-(rs.h-_h)/2)
-        console.log(fLeft, fTop)
+        //console.log(fLeft, fTop)
         _flipper.css({
             'left':(fPos.left-(rs.w-_w)/2),
             'top':(fPos.top-(rs.h-_h)/2)
@@ -354,7 +354,7 @@ var Flip = function(){
             var dx = ev.pageX-startPoint.x
             var dy = ev.pageY-startPoint.y
             var angle = Math.atan2(dy, dx)
-            var distance = Math.sqrt(dx*dx + dy*dy)*2
+            var distance = Math.sqrt(dx*dx + dy*dy)/2
             if(dx==0) return;
 
             if(startPoint.direction) {
@@ -368,6 +368,7 @@ var Flip = function(){
                 distance=-distance
                 angle = Math.atan2(-dy, -dx)
             }
+            console.log(distance)
             reformFlipper(_w, _h, angle, distance)
         }
         //return false;
@@ -380,7 +381,7 @@ var Flip = function(){
             var dx = ev.pageX-startPoint.x
             var dy = ev.pageY-startPoint.y
             var angle = Math.atan2(dy, dx)
-            var distance = Math.sqrt(dx*dx + dy*dy)*2
+            var distance = Math.sqrt(dx*dx + dy*dy)/2
             var cancel = (distance<300)
             console.log('-------------- cancel',cancel, distance)
 
