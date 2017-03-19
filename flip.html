@@ -22,8 +22,16 @@
         }
         #fb {
             position:relative;
-            margin:auto;
-            margin-top:30px;
+            /*margin:auto;*/
+            /*margin-top:30px;*/
+            /*transform:scale(0.5);*/
+            /*transform-origin:0px 0px;*/
+
+        }
+        #edge-left,#edge-right {
+            /*background:rgba(0,0,0,0.05);*/
+        }
+        .content {
         }
         .fb-wrapper {
             box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
@@ -48,6 +56,7 @@
 </head>
 <body>
 
+<div class="content">
 <div id="fb" style="display:none;">
     <iframe class="page" id="page1" style="background: teal;">1</iframe>
     <iframe class="page" id="page2" style="background: gold;">2</iframe>
@@ -55,6 +64,7 @@
     <iframe class="page" id="page4" style="background: darkcyan;">4</iframe>
     <iframe class="page" id="page5" style="background: moccasin;">5</iframe>
     <iframe class="page" id="page6" style="background: darkcyan;">6</iframe>
+</div>
 </div>
 <!--<div id="fb-control" style="position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:10;"></div>-->
 

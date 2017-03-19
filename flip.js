@@ -12,6 +12,7 @@ var Flip = function(){
     var _edgeSize
     var _clickedEdge
     var _easing
+    var _zoom=1
 
     // make each side (left, right) holder and call makeFlipper
     function make(container) {
@@ -92,7 +93,7 @@ var Flip = function(){
         // hide flipper
         $('.flipper').hide()
 
-        //$(window).trigger('resize');
+        $(window).trigger('resize');
     }
 
     // make wrapper and wrap chlid
@@ -294,8 +295,8 @@ var Flip = function(){
         }
 
         _flipper.css({
-            'left':(fPos.left-(rs.w-_w)/2),
-            'top':(fPos.top-(rs.h-_h)/2)
+            'left':(fPos.left/_zoom-(rs.w-_w)/2),
+            'top':(fPos.top/_zoom-(rs.h-_h)/2)
         })
 
         _flipper.width(rs.w)
@@ -416,6 +417,7 @@ var Flip = function(){
     }
 
     function inRect(x,y,ox,oy,width,height) {
+        //console.log(x,y,ox,oy)
         if(x>=ox && x<=ox+width && y>=oy && y <=oy+height) return true
         return false
     }
@@ -441,19 +443,27 @@ var Flip = function(){
         var y = ev.pageY
         var o = _container.offset()
 
-        if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
+        if (inRect(x, y,
+                o.left, o.top,
+                _w * _edge, _w * _edge)) {
             _startPoint = {x:x, y:y}
             _clickedEdge = 'top-left'
         }
-        else if (inRect(x, y, o.left, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+        else if (inRect(x, y,
+                o.left, o.top + zHeight(_container) - _w * _edge,
+                _w * _edge, _w * _edge)) {
             _startPoint = {x:x, y:y}
             _clickedEdge = 'bottom-left'
         }
-        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top, _w * _edge, _w * _edge)) {
+        else if (inRect(x, y,
+                o.left + zWidth(_container) - _w * _edge, o.top,
+                _w * _edge, _w * _edge)) {
             _startPoint = {x:x, y:y}
             _clickedEdge = 'top-right'
         }
-        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+        else if (inRect(x, y,
+                o.left + zWidth(_container) - _w * _edge, o.top + zHeight(_container) - _w * _edge,
+                _w * _edge, _w * _edge)) {
             _startPoint = {x:x, y:y}
             _clickedEdge = 'bottom-right'
         }
@@ -465,8 +475,8 @@ var Flip = function(){
         ev.preventDefault()
         ev.stopPropagation()
 
-        var dx = ev.pageX-_startPoint.x
-        var dy = ev.pageY-_startPoint.y
+        var dx = (ev.pageX-_startPoint.x)/_zoom
+        var dy = (ev.pageY-_startPoint.y)/_zoom
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
         if (distance<10) {
@@ -522,6 +532,8 @@ var Flip = function(){
         var y = ev.pageY
         var o = _container.offset()
 
+        //console.log(x,y,o)
+
         if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
             _edgeShown = true
@@ -530,7 +542,7 @@ var Flip = function(){
             startFlip('#page3', '#page2', 'left')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
         }
-        else if (inRect(x, y, o.left, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+        else if (inRect(x, y, o.left, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
             _edgeShown = true
             _edgeAngle = -45
@@ -538,7 +550,7 @@ var Flip = function(){
             startFlip('#page3', '#page2', 'left')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
         }
-        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top, _w * _edge, _w * _edge)) {
+        else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
             _edgeShown = true
             _edgeAngle = -45
@@ -546,7 +558,7 @@ var Flip = function(){
             startFlip('#page4', '#page5', 'right')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
         }
-        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+        else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
             _edgeShown = true
             _edgeSize = -_w * _edge / 1.414
@@ -555,8 +567,8 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
         }
         else if(_startPoint) {
-            var dx = ev.pageX-_startPoint.x
-            var dy = ev.pageY-_startPoint.y
+            var dx = (ev.pageX-_startPoint.x)/_zoom
+            var dy = (ev.pageY-_startPoint.y)/_zoom
             var angle = Math.atan2(dy, dx)
             var distance = Math.sqrt(dx*dx + dy*dy)/2
             if(dx==0) return;
@@ -588,13 +600,62 @@ var Flip = function(){
         }
     })
 
-    function zoom(zx, zy) {
-        _container.css('transform', 'scale('+zx+','+zy+')')
+    $(window).resize(function() {
+        var hr = $('body').width()/_container.width()
+            vr = $('body').height()/_container.height()
+        console.log(hr,vr)
+        zoom(Math.min(hr,vr))
+    })
+
+    function zWidth(s) {
+        s=(s.fn)?s:$(s)
+        return s.width()*_zoom
+    }
+
+    function zHeight(s) {
+        s=(s.fn)?s:$(s)
+        return s.height()*_zoom
+    }
+
+    function _w() {
+        return _w * _zoom
+    }
+
+    function _h() {
+        return _h * _zoom
+    }
+
+    function zoom(z) {
+        // _container.css({
+        //     'transform':'scale('+zx+','+zy+')',
+        //     'transform-origin':'0px 0px'
+        // })
+        // _w *= zx
+        // _h *= zy
+        z-=0.05
+        _container.css({
+            'transform':'scale('+z+')',
+            'transform-origin':'0px 0px'
+        })
+        _container.parent().width(2*_w*z)
+        _container.parent().height(_h*z)
+        console.log($('body').width()
+        ,_container.parent().width()
+        ,($('body').width()-_container.parent().width())/2)
+        _container.parent().css({
+            'margin-left':($('body').width()-_container.parent().width())/2,
+            //'margin-top':($('body').height()-_container.parent().height())/2,
+            'margin-top':'10px',
+            'padding':'10px',
+            'overflow':'hidden'
+        })
+        _zoom = z
     }
 
     return {
         make : make,
         startFlip : startFlip,
+        endFlip : endFlip,
         reform : reformFlipper,
         ease : ease,
         made : made,
