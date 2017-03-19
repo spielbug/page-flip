@@ -5,11 +5,13 @@
 
 
 var Flip = function(){
-    var _w, _h, _flipper, _left, _right, _made;
+    var _w, _h, _flipper, _left, _right, _made, _container;
+    var _edge=0.1, _edgeShown = false
     // make each side (left, right) holder and call makeFlipper
     function make(container) {
         // metric
-        container = $(container)
+        container = (container.fn)? container : $(container)
+        _container = container
         var metricDiv = $('#page4')
         _w = metricDiv.width()
         _h = metricDiv.height()
@@ -38,6 +40,24 @@ var Flip = function(){
             _made = true
         }
 
+        // make edge (to receive event)
+        var edgeLeft = makeDiv(_w*_edge,_h,'edge-left')
+        edgeLeft.css ({
+            position:'absolute',
+            left:'0px',
+            top:'0px',
+            background:'rgba(0,0,0,0.1)'
+        })
+        var edgeRight = makeDiv(_w*_edge,_h,'edge-left')
+        edgeRight.css ({
+            position:'absolute',
+            left:(_w*(2-0.1))+'px',
+            top:'0px',
+            background:'rgba(0,0,0,0.1)'
+        })
+        container.append(edgeLeft)
+        container.append(edgeRight)
+
         // make child to have their wrapper and gradient
         var childs = container.children()
         var len=childs.length
@@ -61,6 +81,12 @@ var Flip = function(){
         // move to side
         $('#page1,#page2,#page3').parent().appendTo('#side-left')
         $('#page4,#page5,#page6').parent().appendTo('#side-right')
+
+        // hide all gradient
+        $('.gradient').hide()
+
+        // hide flipper
+        $('.flipper').hide()
 
         //$(window).trigger('resize');
     }
@@ -103,6 +129,7 @@ var Flip = function(){
         if(!container.fn) container = $(container)
         // div for flipping
         _flipper = makeDiv(_w, _h, 'flipper')
+        _flipper.addClass('flipper')
         _flipper.css({
             'position':'absolute',
             //'left' : _w,
@@ -182,6 +209,8 @@ var Flip = function(){
             'epub/OEBPS/content/')
         )
 
+        _flipper.show()
+
 
         //if(!div1[0] || !div2[0]) throw 'no flip-bottom or flip-top'
         //$('.flip-top').parent().appendTo(_flipper)
@@ -192,17 +221,28 @@ var Flip = function(){
         //$(window).trigger('resize');
     }
 
-    function endFlip(div1, div2, cancel, direction) {
-        div1 = div1.fn?div1:$(div1)
-        div2 = div2.fn?div2:$(div2)
+    function endFlip(cancel, direction) {
 
-        div1.parent().css({
+        _flipper.hide()
+
+        if(direction==-1) {
+            _flipper.css ('left','0')
+        }
+        else {
+            _flipper.css ('left',_w)
+        }
+
+        _flipper.css({
+            transform : ''
+        })
+
+        $('.flip-bottom').parent().css({
             transform:'',
             left:'0',
             top:'0',
         })
 
-        div2.parent().css({
+        $('.flip-top').parent().css({
             transform:'',
             left:'0',
             top:'0',
@@ -213,9 +253,6 @@ var Flip = function(){
         })
         $('.gradient').hide()
 
-        _flipper.css({
-            transform : ''
-        })
 
         //$('#page1,#page2,#page3').parent().appendTo('#side-left')
         //$('#page4,#page5,#page6').parent().appendTo('#side-right')
@@ -518,6 +555,71 @@ var Flip = function(){
         }
 
     })
+
+    function inRect(x,y,ox,oy,width,height) {
+        if(x>=ox && x<=ox+width && y>=oy && y <=oy+height) return true
+        return false
+    }
+
+    function easeEdge(angle, stepFunc, endFunc) {
+        ease(EasingFunctions.easeInOutQuad,
+            function (step) {
+                reformFlipper(null, null, deg2rad(angle), stepFunc(step))
+            },
+            function () {
+                if(endFunc) endFunc()
+            }, 300, 15, 0
+        )
+    }
+
+    var _edgeAngle
+    var _edgeSize
+    $(document).bind('mousemove',function(ev){
+        if(!_container) return;
+
+        var x = ev.pageX
+        var y = ev.pageY
+        var o = _container.offset()
+
+            if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
+                if(_edgeShown) return
+                _edgeShown = true
+                _edgeAngle = 45
+                _edgeSize = _w * _edge / 1.414
+                startFlip('#page3', '#page2')
+                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            }
+            else if (inRect(x, y, o.left, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+                if(_edgeShown) return
+                _edgeShown = true
+                _edgeAngle = -45
+                _edgeSize = _w * _edge / 1.414
+                startFlip('#page3', '#page2')
+                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            }
+            else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top, _w * _edge, _w * _edge)) {
+                if(_edgeShown) return
+                _edgeShown = true
+                _edgeAngle = -45
+                _edgeSize = -_w * _edge / 1.414
+                startFlip('#page4', '#page5')
+                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            }
+            else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+                if(_edgeShown) return
+                _edgeShown = true
+                _edgeSize = -_w * _edge / 1.414
+                _edgeAngle = 45
+                startFlip('#page3', '#page2')
+                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            }
+            else {
+                if(!_edgeShown) return
+                _edgeShown = false
+                easeEdge(_edgeAngle, function(step) { return _edgeSize * (1-step)}, function() {endFlip(true, 0)})
+            }
+    })
+
 
     // iframe load function for event bubbling
     // 현재로서는 사용안함
