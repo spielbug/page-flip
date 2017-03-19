@@ -479,13 +479,19 @@ var Flip = function(){
         var dy = (ev.pageY-_startPoint.y)/_zoom
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
-        if (distance<10) {
+        if (distance<10) { // just clicked
+
             switch(_clickedEdge) {
                 case 'top-left':angle = 0.2;distance = 300;dx = 2*distance; dy=100;_startPoint.direction = 1;break;
                 case 'top-right':angle = -0.2;distance = 300;dx = -2*distance; dy=100;_startPoint.direction = -1;break;
                 case 'bottom-left':angle = -0.2;distance = 300;dx = 2*distance; dy=-100;_startPoint.direction = 1;break;
                 case 'bottom-right':angle = 0.2;distance = 300;dx = -2*distance; dy=-100;_startPoint.direction = -1;break;
             }
+
+            setTimeout(function(){
+                //console.log('show edge')
+                checkMousePosition(ev)
+            },500)
         }
         var cancel = (distance<300)
 
@@ -502,7 +508,7 @@ var Flip = function(){
         }
         var duration = 300
 
-        console.log('cancel',cancel, 'distance' , distance, 'angle', angle, 'dx', dx, 'dy', dy)
+        //console.log('cancel',cancel, 'distance' , distance, 'angle', angle, 'dx', dx, 'dy', dy)
 
         // if cancel, back page to orgin. slowdown
         if(cancel) {
@@ -514,7 +520,7 @@ var Flip = function(){
 
         ease(EasingFunctions.easeInOutQuad,
             function(step){
-                console.log(angle-step*angle,equation(distance, step))
+                //console.log(angle-step*angle,equation(distance, step))
                 reformFlipper(null, null, angle - step*angle, equation(distance, step))
             },function(done){
                 console.log('done')
@@ -524,9 +530,14 @@ var Flip = function(){
             },duration,15, 0)
     })
 
-    $(document).bind('mousemove',function(ev){
-        if(!_container) return;
-        if(_easing) return;
+    $(document).bind('mousemove',function(ev) {
+        checkMousePosition(ev)
+
+    });
+
+    function checkMousePosition(ev) {
+        if(!_container) return false
+        if(_easing) return false
 
         var x = ev.pageX
         var y = ev.pageY
@@ -598,12 +609,12 @@ var Flip = function(){
                     endFlip(true, _edgeSize>0?1:-1)
                 })
         }
-    })
+        return true
+    }
 
     $(window).resize(function() {
         var hr = $('body').width()/_container.width()
             vr = $('body').height()/_container.height()
-        console.log(hr,vr)
         zoom(Math.min(hr,vr))
     })
 
@@ -632,24 +643,16 @@ var Flip = function(){
         // })
         // _w *= zx
         // _h *= zy
+
         z-=0.05
+        _zoom = z
+
         _container.css({
             'transform':'scale('+z+')',
-            'transform-origin':'0px 0px'
+            'transform-origin':'0px 0px',
+            'left':(_container.parent().width()-_container.width()*_zoom)/2,
+            'top':(_container.parent().height()-_container.height()*_zoom)/2,
         })
-        _container.parent().width(2*_w*z)
-        _container.parent().height(_h*z)
-        console.log($('body').width()
-        ,_container.parent().width()
-        ,($('body').width()-_container.parent().width())/2)
-        _container.parent().css({
-            'margin-left':($('body').width()-_container.parent().width())/2,
-            //'margin-top':($('body').height()-_container.parent().height())/2,
-            'margin-top':'10px',
-            'padding':'10px',
-            'overflow':'hidden'
-        })
-        _zoom = z
     }
 
     return {

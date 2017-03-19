@@ -75,13 +75,17 @@ var Loader = function(epubPath, loaded) {
 
     }
 
+    function resizeEmptyDiv() {
+
+    }
+
     $('iframe').load(function(evt) {
         var body=this.contentDocument.body
         _w = parseInt(body.style.width)
         _h = parseInt(body.style.height)
         var hr = 500/_w
         var vr = 500/_h
-        //console.log(hr,vr)
+        // console.log(hr,vr)
         $(this).width(_w)
         $(this).height(_h)
         //$(this).siblings().width(w)
@@ -133,8 +137,9 @@ var Loader = function(epubPath, loaded) {
             if(page <= 0 || page > ret.totalPages) {
                 // empty page
                 fullPath = 'empty.html'
+                _holders[i].addClass('empty')
             }
-            console.log(fullPath);
+            //console.log(fullPath);
             _holders[i].attr('src', fullPath)
             _holders[i].data('page',page)
 
