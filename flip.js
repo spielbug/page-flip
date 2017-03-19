@@ -245,13 +245,16 @@ var Flip = function(){
 
         $('#page1,#page2,#page5,#page6').parent().hide()
         $('#page3,#page4').parent().show()
+        console.log('cancel',cancel)
         if(!cancel) {
 
             if(direction==-1) {
                 // load next page
+                _book.next()
             }
             else if(direction==1){
                 // load previous page
+                _book.previous()
             }
 
         }
@@ -333,7 +336,7 @@ var Flip = function(){
         var rcy = 0
         var fdTop = -Math.tan(angle)*(Math.cos(angle)*_w-distance)
         var fdLeft = -rcx
-//console.log(distance, rcx, fdLeft, fdTop)
+        //console.log(distance, rcx, fdLeft, fdTop)
         if(angle>0) {
             fdTop = topMargin*2+fdTop
             rcy = _h;
@@ -506,7 +509,7 @@ var Flip = function(){
                 reformFlipper(null, null, angle - step*angle, equation(distance, step))
             },function(done){
                 console.log('done')
-                endFlip('.flip-bottom', '.flip-top', cancel, direction)
+                endFlip(cancel, direction)
                 _startPoint = undefined
                 _edgeShown = false
             },duration,15, 0)
