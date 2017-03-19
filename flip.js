@@ -65,7 +65,8 @@ var Flip = function(){
             var child = $(childs[i])
             console.log(child,child.attr('class'))
             if(child.hasClass('side-left') || child.hasClass('side-right')
-                || child.parent().hasClass('fb-wrapper') || child.attr('id')=='flipper') {
+                || child.parent().hasClass('fb-wrapper') || child.attr('id')=='flipper'
+                || child.attr('id')=='edge-left' || child.attr('id')=='edge-right') {
                 console.log('this div will be ignored')
                 continue
 
@@ -80,7 +81,9 @@ var Flip = function(){
 
         // move to side
         $('#page1,#page2,#page3').parent().appendTo('#side-left')
-        $('#page4,#page5,#page6').parent().appendTo('#side-right')
+        $('#page1,#page2').hide()
+        $('#page6,#page5,#page4').parent().appendTo('#side-right')
+        $('#page5,#page6').hide()
 
         // hide all gradient
         $('.gradient').hide()
@@ -449,112 +452,10 @@ var Flip = function(){
 
     //make('#fb')
 
-    var startPoint=undefined;
-    $('#fb-control').on('mousedown',function(ev){
-        console.log(ev.pageX, ev.pageY)
-        if(!_left|!_right) return
-        ev.preventDefault()
-        ev.stopPropagation()
-        var x = ev.pageX
-        var lx =  _left.offset().left
-        var rx =  _right.offset().left
-
-        console.log(x,lx,rx)
-        if(x > lx && x < rx) {
-            startPoint = {x:ev.pageX, y:ev.pageY, direction:1}
-            console.log('left clicked')
-//                $('#page1,#page2').css('visibility','visible')
-//            $('#page2').addClass('flip-top')
-//            $('#page3').addClass('flip-bottom')
-            startFlip('#page3','#page2')
-        }
-        else if(x > rx && x < 2*rx-lx) {
-            startPoint = {x:ev.pageX, y:ev.pageY, direction:-1}
-            console.log('right clicked')
-//                $('#page5,#page6').css('visibility','visible')
-//            $('#page4').addClass('flip-bottom')
-//            $('#page5').addClass('flip-top')
-            startFlip('#page4','#page5')
-        }
-        else return;
-    })
-    $('#fb-control').on('mousemove',function(ev){
-        ev.preventDefault()
-        ev.stopPropagation()
-        // console.log('control',ev.pageX,ev.pageY)
-        if(startPoint) {
-            //ev.preventDefault()
-            //ev.stopPropagation()
-            var dx = ev.pageX-startPoint.x
-            var dy = ev.pageY-startPoint.y
-            var angle = Math.atan2(dy, dx)
-            var distance = Math.sqrt(dx*dx + dy*dy)/2
-            if(dx==0) return;
-
-            if(startPoint.direction) {
-                if(startPoint.direction * dx < 0) return;
-            }
-            else {
-                startPoint.direction = dx>0?1:-1
-            }
-
-            if(dx<0) {
-                distance=-distance
-                angle = Math.atan2(-dy, -dx)
-            }
-            //console.log(distance)
-            setTimeout(function() {
-                reformFlipper(_w, _h, angle, distance)
-            },1)
-        }
-        //return false;
-    })
-    $('#fb-control').on('mouseup',function(ev) {
-        if(startPoint) {
-            ev.preventDefault()
-            ev.stopPropagation()
-
-            var dx = ev.pageX-startPoint.x
-            var dy = ev.pageY-startPoint.y
-            var angle = Math.atan2(dy, dx)
-            var distance = Math.sqrt(dx*dx + dy*dy)/2
-            var cancel = (distance<300)
-            console.log('-------------- cancel',cancel, distance)
-
-            if(dx<0) {
-                distance=-distance
-                angle = Math.atan2(-dy, -dx)
-            }
-
-            var direction = startPoint.direction
-            startPoint = undefined;
-            var equation = function(d, s) {
-                d=Math.abs(d)
-                return direction*(d+s*(2*_w-d))
-            }
-            var duration = 200
-            if(cancel) {
-                equation = function(d, s) {
-                    return d-s*d
-
-                }
-                duration = 300
-            }
-
-
-            ease(EasingFunctions.easeInOutQuad,
-                function(step){
-                    //console.log(angle-step*angle,distance-step*distance)
-                    reformFlipper(null, null, angle-step*angle, equation(distance, step))
-                },function(done){
-                    console.log('done')
-                    endFlip('.flip-bottom', '.flip-top', cancel, direction)
-                    startPoint = undefined
-                },duration,15, 0)
-
-        }
-
-    })
+    var _startPoint
+    var _edgeAngle
+    var _edgeSize
+    var _clickedEdge
 
     function inRect(x,y,ox,oy,width,height) {
         if(x>=ox && x<=ox+width && y>=oy && y <=oy+height) return true
@@ -572,8 +473,88 @@ var Flip = function(){
         )
     }
 
-    var _edgeAngle
-    var _edgeSize
+    $(document).bind('mousedown',function(ev){
+        if(!_container) return;
+        ev.preventDefault()
+        ev.stopPropagation()
+
+        var x = ev.pageX
+        var y = ev.pageY
+        var o = _container.offset()
+
+        if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
+            _startPoint = {x:x, y:y}
+            _clickedEdge = 'top-left'
+        }
+        else if (inRect(x, y, o.left, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+            _startPoint = {x:x, y:y}
+            _clickedEdge = 'bottom-left'
+        }
+        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top, _w * _edge, _w * _edge)) {
+            _startPoint = {x:x, y:y}
+            _clickedEdge = 'top-right'
+        }
+        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+            _startPoint = {x:x, y:y}
+            _clickedEdge = 'bottom-right'
+        }
+    })
+
+    $(document).bind('mouseup',function(ev){
+        if(!_container) return
+        if(!_startPoint) return
+        ev.preventDefault()
+        ev.stopPropagation()
+
+        var dx = ev.pageX-_startPoint.x
+        var dy = ev.pageY-_startPoint.y
+        var angle = Math.atan2(dy, dx)
+        var distance = Math.sqrt(dx*dx + dy*dy)/2
+        if (distance<10) {
+            switch(_clickedEdge) {
+                case 'top-left':angle = 0.2;distance = 300;dx = 2*distance; dy=100;_startPoint.direction = 1;break;
+                case 'top-right':angle = -0.2;distance = 300;dx = -2*distance; dy=100;_startPoint.direction = -1;break;
+                case 'bottom-left':angle = -0.2;distance = 300;dx = 2*distance; dy=-100;_startPoint.direction = 1;break;
+                case 'bottom-right':angle = 0.2;distance = 300;dx = -2*distance; dy=-100;_startPoint.direction = -1;break;
+            }
+        }
+        var cancel = (distance<300)
+
+        if(dx<0) {
+            distance=-distance
+            angle = Math.atan2(-dy, -dx)
+        }
+
+        var direction = _startPoint.direction
+        //startPoint = undefined;
+        var equation = function(d, s) {
+            d=Math.abs(d)
+            return direction*(d+s*(2*_w-d))
+        }
+        var duration = 200
+
+        console.log('cancel',cancel, 'distance' , distance, 'angle', angle, 'dx', dx, 'dy', dy)
+
+        // if cancel, back page to orgin. slowdown
+        if(cancel) {
+            equation = function(d, s) {
+                return d-s*d
+            }
+            duration = 300
+        }
+
+
+        ease(EasingFunctions.easeInOutQuad,
+            function(step){
+                console.log(angle-step*angle,equation(distance, step))
+                reformFlipper(null, null, angle - step*angle, equation(distance, step))
+            },function(done){
+                console.log('done')
+                endFlip('.flip-bottom', '.flip-top', cancel, direction)
+                _startPoint = undefined
+            },duration,15, 0)
+    })
+
     $(document).bind('mousemove',function(ev){
         if(!_container) return;
 
@@ -581,43 +562,70 @@ var Flip = function(){
         var y = ev.pageY
         var o = _container.offset()
 
-            if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
-                if(_edgeShown) return
-                _edgeShown = true
-                _edgeAngle = 45
-                _edgeSize = _w * _edge / 1.414
-                startFlip('#page3', '#page2')
-                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
-            }
-            else if (inRect(x, y, o.left, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
-                if(_edgeShown) return
-                _edgeShown = true
-                _edgeAngle = -45
-                _edgeSize = _w * _edge / 1.414
-                startFlip('#page3', '#page2')
-                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
-            }
-            else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top, _w * _edge, _w * _edge)) {
-                if(_edgeShown) return
-                _edgeShown = true
-                _edgeAngle = -45
-                _edgeSize = -_w * _edge / 1.414
-                startFlip('#page4', '#page5')
-                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
-            }
-            else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
-                if(_edgeShown) return
-                _edgeShown = true
-                _edgeSize = -_w * _edge / 1.414
-                _edgeAngle = 45
-                startFlip('#page3', '#page2')
-                easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+        if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
+            if(_edgeShown) return
+            _edgeShown = true
+            _edgeAngle = 45
+            _edgeSize = _w * _edge / 1.414
+            startFlip('#page3', '#page2')
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+        }
+        else if (inRect(x, y, o.left, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+            if(_edgeShown) return
+            _edgeShown = true
+            _edgeAngle = -45
+            _edgeSize = _w * _edge / 1.414
+            startFlip('#page3', '#page2')
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+        }
+        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top, _w * _edge, _w * _edge)) {
+            if(_edgeShown) return
+            _edgeShown = true
+            _edgeAngle = -45
+            _edgeSize = -_w * _edge / 1.414
+            startFlip('#page4', '#page5')
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+        }
+        else if (inRect(x, y, o.left + _container.width() - _w * _edge, o.top + _container.height() - _w * _edge, _w * _edge, _w * _edge)) {
+            if(_edgeShown) return
+            _edgeShown = true
+            _edgeSize = -_w * _edge / 1.414
+            _edgeAngle = 45
+            startFlip('#page4', '#page5')
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+        }
+        else if(_startPoint) {
+            var dx = ev.pageX-_startPoint.x
+            var dy = ev.pageY-_startPoint.y
+            var angle = Math.atan2(dy, dx)
+            var distance = Math.sqrt(dx*dx + dy*dy)/2
+            if(dx==0) return;
+
+            if(_startPoint.direction) {
+                if(_startPoint.direction * dx < 0) return;
             }
             else {
-                if(!_edgeShown) return
-                _edgeShown = false
-                easeEdge(_edgeAngle, function(step) { return _edgeSize * (1-step)}, function() {endFlip(true, 0)})
+                _startPoint.direction = dx>0?1:-1
             }
+
+            if(dx<0) {
+                distance=-distance
+                angle = Math.atan2(-dy, -dx)
+            }
+            //console.log(distance)
+            setTimeout(function() {
+                reformFlipper(_w, _h, angle, distance)
+            },1)
+
+        }
+        else {
+            if(!_edgeShown) return
+            _edgeShown = false
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * (1-step*0.999) },
+                function() {
+                    endFlip(true, _edgeSize>0?1:-1)
+                })
+        }
     })
 
 
