@@ -367,7 +367,7 @@ var Flip = function(){
 
         var wrapper = div.parent()
         wrapper.css({
-            'z-index':6,
+            //'z-index':6,
             'width': _w,
             'height': _h,
             'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',

@@ -18,21 +18,24 @@
             height: 100%;
             margin: 0px;
             padding: 0px;
-            overflow: hidden;
+            //overflow: hidden;
         }
         #fb {
             position:relative;
             margin:auto;
             margin-top:30px;
         }
-        .fb-wrapper,.flip-bottom,.flip-top {
+        .fb-wrapper {
             box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+        }
+        .flip-bottom,.flip-top {
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
         }
         .flip-top {
             cursor : pointer;
         }
         .flipper {
-            /*border:1px black solid;*/
+            border:1px black solid;
         }
 
 /*
@@ -137,95 +140,12 @@
         .attr('wmode','Opaque')
         .attr('scrolling','no')
 
-
-    var loadCount=0;
-/*
-    $('#page1').attr('src','epub/OEBPS/content/page00012.xhtml')
-    $('#page2').attr('src','epub/OEBPS/content/page00013.xhtml')
-    $('#page3').attr('src','epub/OEBPS/content/page00014.xhtml')
-    $('#page4').attr('src','epub/OEBPS/content/page00015.xhtml')
-    $('#page5').attr('src','epub/OEBPS/content/page00016.xhtml')
-    $('#page6').attr('src','epub/OEBPS/content/page00017.xhtml')
-*/
-
-    $('iframe').load(function(evt) {
-        var body=this.contentDocument.body
-        var w = parseInt(body.style.width)
-        var h = parseInt(body.style.height)
-        var hr = 500/w
-        var vr = 500/h
-        console.log(hr,vr)
-        $(this).width(w)
-        $(this).height(h)
-        //$(this).siblings().width(w)
-        //$(this).siblings().height(h)
-
-        loadCount++;
-        console.log('frames loaded',loadCount)
-        if(loadCount==6) {
-            _flip.make('#fb')
-            $('#fb').show()
-        }
-    })
-
-    function resizeFrame(dom) {
-        if(!dom.contentDocument) {
-            setTimeout(function(){resizeFrame(dom)}, 10)
-        }
-        console.log(dom.contentDocument)
-        return
-        var body=dom.contentDocument.body
-        var w = parseInt(body.style.width)
-        var h = parseInt(body.style.height)
-        var hr = 500/w
-        var vr = 500/h
-        // console.log(hr,vr)
-        $(dom).width(w)
-        $(dom).height(h)
-        //$(this).siblings().width(w)
-        //$(this).siblings().height(h)
-
-        loadCount++;
-        console.log('frames loaded',loadCount)
-        if(loadCount==6) {
-            _flip.make('#fb')
-            //$('#fb').show()
-        }
-    }
-
     _book = Loader('epub/', function loaded(){
         console.log('manifest loaded')
 
-        for(var i=0; i<_book.totalPages && i<6 ; i++) {
-            var file = _book.toc.eq(i+10)
-            var fullPath = 'epub/'+_book.rootFilePath+file.attr('href').replace('content/','')
-            console.log(fullPath);
-            $('#page'+(i+1)).attr('src', fullPath)
+        _book.registerHolders(['#page1','#page2','#page3','#page4','#page5','#page6'])
+        _book.start()
 
-            /*
-
-            (function(i) {
-
-                $.ajax({
-                    url: fullPath,
-                    dataType: 'xml',
-                    success: function (s) {
-                        //console.log(s.children[0].innerHTML)
-                        var iframe = $('#page'+(i+1))
-                        iframe[0].contentDocument.children[0].innerHTML =
-                            replace(s.children[0].innerHTML, 'epub/OEBPS/content/')
-                        var w = $(iframe[0].contentDocument.body).width()
-                        var h = $(iframe[0].contentDocument.body).height()
-                        iframe.width(w)
-                        iframe.height(h)
-
-                    }
-                })
-
-            })(i)
-            */
-
-        }
     }).result
 
 </script>
