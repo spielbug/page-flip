@@ -10,6 +10,8 @@
 <head>
     <meta charset="UTF-8">
     <title>page-flip</title>
+    <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/common.css">-->
+    <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/page.css">-->
     <style>
         html, body
         {
@@ -17,34 +19,20 @@
             margin: 0px;
             padding: 0px;
         }
+
+/*
+이걸 활성화하면 div 아이콘이 커진다 왜일까...
         div {
             width:500px;height:500px;
-            /*border:1px solid black;*/
-            /*overflow: hidden;*/
         }
+*/
         #fb {
             position:relative;
             margin:auto;
             margin-top:30px;
         }
-        .fb-wrapper {
-            /*box-shadow: -5px -5px 15px rgba(0,0,0,0.1);*/
-        }
         .page,.flip-bottom,.flip-top {
             box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
-        }
-        .page {
-            /*position:absolute;*/
-        }
-        iframe {
-            /*transform:'scale(0.25,0.35)'*/
-        }
-        #flipper {
-            /*background:blue;*/
-            /*border:2px red solid;*/
-        }
-        .flip-top,.flip-bottom {
-            /*overflow:hidden;*/
         }
     </style>
 </head>
@@ -67,6 +55,24 @@
 <script>
 
     _flip = Flip()
+
+    function duplicate(src, dst) {
+        dst=(dst.fn)?dst:$(dst)
+        src=(src.fn)?src:$(src)
+        var s = replace(
+            src[0].contentDocument.head.innerHTML+src[0].contentDocument.body.innerHTML,
+            'epub/OEBPS/content/')
+        dst.html(s)
+    }
+
+    function replace(s, prefix) {
+
+        s = s.replace(/src=\"/gi,'src="'+prefix+'')
+        s = s.replace(/href=\"/gi,'href="'+prefix+'')
+        s = s.replace(/url\(\"/gi,'url("'+prefix+'')
+        return s;
+    }
+
     function deg2rad(deg) {
         return deg/180*Math.PI
     }

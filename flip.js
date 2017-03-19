@@ -147,17 +147,41 @@ var Flip = function(){
     function startFlip(bottom, top) {
         bottom = bottom.fn?bottom:$(bottom)
         top = top.fn?top:$(top)
+/*
+        $.ajax({
+            'url' : bottom.attr('src'),
+            'dataType' : 'html',
+            'success' : function(s) {
+                s = replace(s, 'epub/OEBPS/content/')
+                $('.flip-bototm').html(s)
+            },
+            'error' : function(e) {
+            }
+        })
+
+        $.ajax({
+            'url' : top.attr('src'),
+            'dataType' : 'html',
+            'success' : function(s) {
+                s = replace(s, 'epub/OEBPS/content/')
+                $('.flip-top').html(s)
+            },
+            'error' : function(e) {
+            }
+        })
+*/
 
         $('.flip-bottom').html(replace(
             bottom[0].contentDocument.head.innerHTML+bottom[0].contentDocument.body.innerHTML,
             'epub/OEBPS/content/')
         )
+        $('.flip-bottom ')
 
-        //$('.flip-bottom').html('Hello, World!')
         $('.flip-top').html(replace(
             top[0].contentDocument.head.innerHTML+top[0].contentDocument.body.innerHTML,
             'epub/OEBPS/content/')
         )
+
 
         //if(!div1[0] || !div2[0]) throw 'no flip-bottom or flip-top'
         //$('.flip-top').parent().appendTo(_flipper)
@@ -511,7 +535,8 @@ var Flip = function(){
         startFlip : startFlip,
         reform : reformFlipper,
         ease : ease,
-        made : made
+        made : made,
+        replace : replace,
     }
 }
 
