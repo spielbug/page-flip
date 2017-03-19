@@ -191,14 +191,13 @@ var Flip = function(){
             'epub/OEBPS/content/')
         )
 
-        bottom.parent().hide()
-        top.parent().hide()
+        _flipper.show()
+        $('.gradient').show()
         if(side=='right') $('#page6').parent().show()
         else $('#page1').parent().show()
+        bottom.parent().hide()
+        top.parent().hide()
 
-        _flipper.show()
-
-        $('.gradient').show()
     }
 
     function endFlip(cancel, direction) {
