@@ -158,7 +158,10 @@
         console.log('manifest loaded')
 
         _book.registerHolders(['#page1','#page2','#page3','#page4','#page5','#page6'])
-        _book.start()
+        _book.start(function(){
+            _flip.make('#fb')
+            $('#fb').show()
+        })
 
     }).result
 

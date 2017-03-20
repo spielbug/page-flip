@@ -3,6 +3,7 @@
  */
 
 
+const _pathPrefix = 'epub/OEBPS/content/';
 
 var Flip = function(){
     var _w, _h, _flipper, _left, _right, _made, _container;
@@ -66,9 +67,7 @@ var Flip = function(){
         for(var i = 0; i<len; i++) {
             var child = $(childs[i])
             //console.log(child,child.attr('class'))
-            if(child.hasClass('side-left') || child.hasClass('side-right')
-                || child.parent().hasClass('fb-wrapper') || child.attr('id')=='flipper'
-                || child.attr('id')=='edge-left' || child.attr('id')=='edge-right') {
+            if(!child.hasClass('page')) {
                 //console.log('this div will be ignored')
                 continue
 
@@ -158,11 +157,13 @@ var Flip = function(){
     }
 
     // make div conveniently
-    function makeDiv(w, h, id) {
+    function makeDiv(w, h, id, className) {
         var div = $('<div>')
-        div.attr('id', id)
+        if(id) div.attr('id', id)
+        if(className) div.addClass(className)
         div.width(w)
         div.height(h)
+
         return div
     }
 
@@ -176,30 +177,75 @@ var Flip = function(){
         return s;
     }
 
+    function makeContentBuffer() {
+        // make page buffer
+        var lbuff=makeDiv(_w,_h,'','buffer-left')
+        lbuff.css({
+            'position':'absolute'
+        })
+        lbuff.appendTo('#side-left')
+        lbuff.hide()
+        var rbuff=makeDiv(_w,_h,'','buffer-right')
+        rbuff.css({
+            'position':'absolute'
+        })
+        rbuff.appendTo('#side-right')
+        rbuff.hide()
+
+
+    }
+    function copyIframeContentToBuffer(side) {
+        // copy iframe content to buffer
+        var bufferSource=['#page1','#page2']
+        if(side=='right') bufferSource = ['#page5','#page6']
+        var src=$(bufferSource[0])[0]
+        $('.buffer-left').html(replace(
+            src.contentDocument.head.innerHTML
+            +src.contentDocument.body.innerHTML,
+            _pathPrefix)
+        )
+
+        src=$(bufferSource[1])[0]
+        $('.buffer-right').html(replace(
+            src.contentDocument.head.innerHTML
+            +src.contentDocument.body.innerHTML,
+            _pathPrefix)
+        )
+
+    }
+
     function startFlip(bottom, top, side) {
         bottom = bottom.fn?bottom:$(bottom)
         top = top.fn?top:$(top)
 
+        var check = bottom[0].contentDocument.head
+        && bottom[0].contentDocument.body
+        && top[0].contentDocument.head
+        && top[0].contentDocument.body
+        if(!check) return
+
         // copy iframe content to flipper
         $('.flip-bottom').html(replace(
-            bottom[0].contentDocument.head.innerHTML+bottom[0].contentDocument.body.innerHTML,
-            'epub/OEBPS/content/')
+            bottom[0].contentDocument.head.innerHTML
+            +bottom[0].contentDocument.body.innerHTML,
+            _pathPrefix)
         )
-        $('.flip-bottom ')
-
         $('.flip-top').html(replace(
-            top[0].contentDocument.head.innerHTML+top[0].contentDocument.body.innerHTML,
-            'epub/OEBPS/content/')
+            top[0].contentDocument.head.innerHTML
+            +top[0].contentDocument.body.innerHTML,
+            _pathPrefix)
         )
 
-        _flipper.show()
+
         $('.gradient').show()
         if(side=='right') $('#page6').parent().show()
         else $('#page1').parent().show()
         bottom.parent().hide()
         top.parent().hide()
 
+        _flipper.show()
     }
+
 
     function endFlip(cancel, direction) {
 
@@ -250,6 +296,7 @@ var Flip = function(){
 
             if(direction==-1) {
                 // load next page
+                //showBuffer()
                 _book.next()
             }
             else if(direction==1){
@@ -261,6 +308,18 @@ var Flip = function(){
         else {
             //$(window).trigger('resize')
         }
+    }
+
+    function showBuffer() {
+        $('.buffer-left').show()
+        $('.buffer-right').show()
+
+    }
+
+    function hideBuffer() {
+        $('.buffer-left').hide()
+        $('.buffer-right').hide()
+
     }
 
     function getRotatedSize(w, h, angle) {

@@ -12,6 +12,7 @@ var Loader = function(epubPath, loaded) {
     var _loadTrigger=6;
     var _w;
     var _h;
+    var _callback;
 
     var ret = {
         metaPath:metaPath,
@@ -111,23 +112,26 @@ var Loader = function(epubPath, loaded) {
             p.text(_book.title)
             //$(this).removeClass('empty')
         }
-
+        $(this).show()
         _loadCount++;
         //console.log('frames loaded',_loadCount)
         if(_loadCount==_loadTrigger) {
-            _flip.make('#fb')
-            $('#fb').show()
+            //_flip.make('#fb')
+            //$('#fb').show()
+            if(_callback) _callback()
         }
     })
 
-    function start() {
+    function start(callback) {
+        _callback = callback
         _curPage=1
         var pages=[-2,-1,0,1,2,3]
         load(pages)
     }
 
-    function previous() {
+    function previous(callback) {
         if(_curPage-2 < 1) return;
+        _callback = callback
         var pages=[]
         _curPage-=2; // for two sided
         for (var i=0; i<6; i++) {
@@ -136,8 +140,9 @@ var Loader = function(epubPath, loaded) {
         load(pages)
     }
 
-    function next() {
+    function next(callback) {
         if(_curPage+2 > ret.totalPages) return;
+        _callback = callback
         var pages=[]
         _curPage+=2; // for two sided
         for (var i=0; i<6; i++) {
@@ -161,7 +166,8 @@ var Loader = function(epubPath, loaded) {
                 _holders[i].addClass('empty')
             }
             //console.log(fullPath);
-            _holders[i].attr('src', fullPath)
+            _holders[i].hide();
+            _holders[i].attr('src', fullPath+'?wmode=transparent')
             _holders[i].data('page',page)
 
             /*
