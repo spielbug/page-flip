@@ -547,6 +547,7 @@ var Flip = function(){
 
         if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
+            if(_book.page<=1) return
             _edgeShown = true
             _edgeAngle = 45
             _edgeSize = _w * _edge / 1.414
@@ -555,6 +556,7 @@ var Flip = function(){
         }
         else if (inRect(x, y, o.left, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
+            if(_book.page<=1) return
             _edgeShown = true
             _edgeAngle = -45
             _edgeSize = _w * _edge / 1.414
@@ -563,6 +565,7 @@ var Flip = function(){
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
+            if(_book.page>=_book.totalPages) return
             _edgeShown = true
             _edgeAngle = -45
             _edgeSize = -_w * _edge / 1.414
@@ -571,6 +574,7 @@ var Flip = function(){
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
+            if(_book.page>=_book.totalPages) return
             _edgeShown = true
             _edgeSize = -_w * _edge / 1.414
             _edgeAngle = 45

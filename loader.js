@@ -40,9 +40,23 @@ var Loader = function(epubPath, loaded) {
             url: epubPath+path,
             dataType : 'xml',
             success: function (content) {
+
                 content = $(content)
+                var metadata = content.find('metadata')
                 var items = content.find('item')
                 var spine = content.find('itemref')
+                // to get elements use chlidren
+                // but to get nodes use chlidNodes
+                var childs = metadata[0].childNodes
+                for(var i in childs) {
+                    var child=childs[i]
+                    if(child.nodeName=='dc:title') {
+                        ret.title = child.textContent
+                        break;
+                    }
+                }
+
+                ret.metadata = metadata
                 ret.items = items
                 ret.spine = spine
                 var toc = content.find('#toc').attr('href')
@@ -80,6 +94,7 @@ var Loader = function(epubPath, loaded) {
     }
 
     $('iframe').load(function(evt) {
+
         var body=this.contentDocument.body
         _w = parseInt(body.style.width)
         _h = parseInt(body.style.height)
@@ -90,6 +105,12 @@ var Loader = function(epubPath, loaded) {
         $(this).height(_h)
         //$(this).siblings().width(w)
         //$(this).siblings().height(h)
+        if($(this).hasClass('empty')) {
+            var p=$(this).contents().find('#title')
+            //console.log(this, p[0])
+            p.text(_book.title)
+            //$(this).removeClass('empty')
+        }
 
         _loadCount++;
         //console.log('frames loaded',_loadCount)
