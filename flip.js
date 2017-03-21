@@ -224,28 +224,27 @@ var Flip = function(){
         bottom = bottom.fn?bottom:$(bottom)
         top = top.fn?top:$(top)
 
-        var check = bottom[0].contentDocument.head
-        && bottom[0].contentDocument.body
-        && top[0].contentDocument.head
-        && top[0].contentDocument.body
-        if(!check) return
-
+        // show pages in flipper
 
         $('.gradient').show()
-        $('.flip-page').show()
 
-        if(side=='right') {
-            $('.flip-top-left,.flip-bottom-left').hide()
-            $('#page6').parent().show()
-        }
-        else {
-            $('.flip-top-right,.flip-bottom-right').hide()
-            $('#page1').parent().show()
-        }
-        bottom.parent().hide()
-        top.parent().hide()
+        setTimeout(function(){
+            if(side=='right') {
+                $('.flip-bottom-right').show()
+                $('.flip-top-right').show()
+                $('#page6').parent().show()
+            }
+            else {
+                $('.flip-bottom-left').show()
+                $('.flip-top-left').show()
+                $('#page1').parent().show()
+            }
+            bottom.parent().hide()
+            top.parent().hide()
+            _flipper.show()
 
-        _flipper.show()
+        },250)
+
     }
 
     function endFlip(cancel, direction) {
@@ -553,8 +552,8 @@ var Flip = function(){
         ev.preventDefault()
         ev.stopPropagation()
 
-        var dx = (ev.pageX-_startPoint.x)/_zoom
-        var dy = (ev.pageY-_startPoint.y)/_zoom
+        var dx = (ev.pageX-_startPoint.x)/_zoom*1.5
+        var dy = (ev.pageY-_startPoint.y)/_zoom*1.5
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
         if (distance<10) { // just clicked
@@ -566,13 +565,7 @@ var Flip = function(){
                 case 'bottom-right':angle = 0.2;distance = 300;dx = -2*distance; dy=-100;_startPoint.direction = -1;break;
             }
 
-            _timerID = setTimeout(function(){
-                //console.log('show edge')
-                if($('.loaded').length==10) {
-                    console.log('show edge timed')
-                    checkMousePosition(ev)
-                }
-            },1000)
+            checkMousePositionDelayed(ev)
         }
         var cancel = (distance<300)
 
@@ -618,6 +611,11 @@ var Flip = function(){
         }
     });
 
+    function checkMousePositionDelayed(ev) {
+        if(!checkMousePosition(ev)) {
+            _timerID = setTimeout(function() {checkMousePositionDelayed(ev)}, 100)
+        }
+    }
     function checkMousePosition(ev) {
         if(!_container) return false
         if(_easing) return false
@@ -668,8 +666,8 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
         }
         else if(_startPoint) {
-            var dx = (ev.pageX-_startPoint.x)/_zoom
-            var dy = (ev.pageY-_startPoint.y)/_zoom
+            var dx = (ev.pageX-_startPoint.x)/_zoom*1.5
+            var dy = (ev.pageY-_startPoint.y)/_zoom*1.5
             var angle = Math.atan2(dy, dx)
             var distance = Math.sqrt(dx*dx + dy*dy)/2
             if(dx==0) return;
