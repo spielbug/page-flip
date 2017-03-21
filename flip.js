@@ -151,16 +151,16 @@ var Flip = function(){
         })
         container.append(_flipper)
 
-        var fbr = makeDiv(_w, _h, '', 'flip-bottom-right')
+        var fbr = makeDiv(_w, _h, 'flip-bottom-right', 'flip-bottom-right')
         var wrapper = makeWrapper(fbr)
-        var fbl = makeDiv(_w, _h, '', 'flip-bottom-left')
+        var fbl = makeDiv(_w, _h, 'flip-bottom-left', 'flip-bottom-left')
         wrapper.prepend(fbl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
-        var ftr = makeDiv(_w, _h, '','flip-top-right')
+        var ftr = makeDiv(_w, _h, 'flip-top-right','flip-top-right')
         wrapper = makeWrapper(ftr)
-        var ftl = makeDiv(_w, _h, '','flip-top-left')
+        var ftl = makeDiv(_w, _h, 'flip-top-left','flip-top-left')
         wrapper.prepend(ftl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
@@ -172,26 +172,29 @@ var Flip = function(){
 
     }
 
+    function getFrameHtml(src, target) {
+        $(target).removeClass('loaded')
+        if(src[0].contentDocument.head==null||src[0].contentDocument.body==null) return ''
+        src.data('stat','loading')
+        return src[0].contentDocument.head.innerHTML+src[0].contentDocument.body.innerHTML
+            +"<script>$('"+target+"').addClass('loaded')</script>"
+    }
     function loadFlipPage() {
 
         $('.flip-bottom-left').html(replace(
-            $('#page3')[0].contentDocument.head.innerHTML
-            +$('#page3')[0].contentDocument.body.innerHTML,
+            getFrameHtml($('#page3'),'.flip-bottom-left'),
             _pathPrefix)
         )
         $('.flip-top-left').html(replace(
-            $('#page2')[0].contentDocument.head.innerHTML
-            +$('#page2')[0].contentDocument.body.innerHTML,
+            getFrameHtml($('#page2'),'.flip-top-left'),
             _pathPrefix)
         )
         $('.flip-bottom-right').html(replace(
-            $('#page4')[0].contentDocument.head.innerHTML
-            +$('#page4')[0].contentDocument.body.innerHTML,
+            getFrameHtml($('#page4'),'.flip-bottom-right'),
             _pathPrefix)
         )
         $('.flip-top-right').html(replace(
-            $('#page5')[0].contentDocument.head.innerHTML
-            +$('#page5')[0].contentDocument.body.innerHTML,
+            getFrameHtml($('#page5'),'.flip-top-right'),
             _pathPrefix)
         )
     }
@@ -612,6 +615,7 @@ var Flip = function(){
     function checkMousePosition(ev) {
         if(!_container) return false
         if(_easing) return false
+        if(!$('.flip-page').hasClass('loaded')) return false
 
         var x = ev.pageX
         var y = ev.pageY

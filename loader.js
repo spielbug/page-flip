@@ -124,7 +124,7 @@ var Loader = function(epubPath, loaded) {
             //$('#fb').show()
             if(_trigger) _trigger()
         }
-        console.log('callback',_callback)
+        //console.log('callback',_callback)
         if(_callback) {
             _callback()
         }
@@ -160,8 +160,8 @@ var Loader = function(epubPath, loaded) {
     }
 
     function load(pages) {
-        console.log('pages',pages)
-        console.log('page',_curPage)
+        // console.log('pages',pages)
+        // console.log('page',_curPage)
         for(var i=0; i<_book.totalPages && i<pages.length ; i++) {
             var page = pages[i]
             var pageIndex = page-1
@@ -211,6 +211,13 @@ var Loader = function(epubPath, loaded) {
         holder=(holder.fn)?holder:$(holder)
         var file = _book.toc.eq(page-1)
         var fullPath = 'epub/'+_book.rootFilePath+file.attr('href').replace('content/','')
+        if(page <= 0 || page > ret.totalPages) {
+            // empty page
+            fullPath = 'empty.html'
+            holder.addClass('empty')
+        }
+        else holder.removeClass('empty')
+
         holder.attr('src',fullPath)
     }
     return { result: ret }
