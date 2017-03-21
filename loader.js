@@ -13,6 +13,7 @@ var Loader = function(epubPath, loaded) {
     var _w;
     var _h;
     var _callback;
+    var _trigger;
 
     var ret = {
         metaPath:metaPath,
@@ -22,7 +23,9 @@ var Loader = function(epubPath, loaded) {
         next : next,
         previous : previous,
         load : load,
-        loadSingle : loadSingle
+        loadSingle : loadSingle,
+        resetLoadCount : function(){_loadCount=0},
+        setTrigger : function(callback){_trigger=callback}
     }
 
     // read epup manifest
@@ -119,12 +122,16 @@ var Loader = function(epubPath, loaded) {
         if(_loadCount==_loadTrigger) {
             //_flip.make('#fb')
             //$('#fb').show()
-            if(_callback) _callback()
+            if(_trigger) _trigger()
+        }
+        console.log('callback',_callback)
+        if(_callback) {
+            _callback()
         }
     })
 
     function start(callback) {
-        _callback = callback
+        _trigger = callback
         _curPage=1
         var pages=[-2,-1,0,1,2,3]
         load(pages)
@@ -199,7 +206,8 @@ var Loader = function(epubPath, loaded) {
     }
 
     function loadSingle(holder, page, callback) {
-        _callback = callback
+        console.log('callback',callback)
+        if(callback) _callback = callback
         holder=(holder.fn)?holder:$(holder)
         var file = _book.toc.eq(page-1)
         var fullPath = 'epub/'+_book.rootFilePath+file.attr('href').replace('content/','')

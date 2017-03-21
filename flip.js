@@ -26,24 +26,6 @@ var Flip = function(){
         container.width(_w*2)
         container.height(_h)
 
-        // make side
-        if(!_left) {
-            _left = makeDiv(_w, _h, 'side-left')
-            _left.addClass('side-left')
-            _left.css({
-                position:'absolute',
-            })
-            _right = makeDiv(_w, _h, 'side-right')
-            _right.addClass('side-right')
-            _right.css({
-                position:'absolute',
-                left:(_w)+'px',
-            })
-            container.append(_left)
-            container.append(_right)
-            makeFlipper(container)
-            _made = true
-        }
 
         // make edge (to receive event)
         var edgeLeft = makeDiv(_w*_edge,_h,'edge-left')
@@ -61,6 +43,11 @@ var Flip = function(){
         container.append(edgeLeft)
         container.append(edgeRight)
 
+        // page move triggers load event
+        // so add new trigger
+        _book.resetLoadCount();
+        _book.setTrigger(loadFlipPage)
+
         // make child to have their wrapper and gradient
         var childs = container.children()
         var len=childs.length
@@ -77,13 +64,35 @@ var Flip = function(){
             var wrapper = makeWrapper(child)
 
             // add wrapper to container
-            wrapper.appendTo(container)
+            container.prepend(wrapper)
+        }
+
+        // make side
+        if(!_left) {
+            _left = makeDiv(_w, _h, 'side-left')
+            _left.addClass('side-left')
+            _left.css({
+                position:'absolute',
+            })
+            _right = makeDiv(_w, _h, 'side-right')
+            _right.addClass('side-right')
+            _right.css({
+                position:'absolute',
+                left:(_w)+'px',
+            })
+            container.prepend(_left)
+            container.prepend(_right)
+            makeFlipper(container)
+            _made = true
         }
 
         // move to side
-        $('#page1,#page2,#page3').parent().appendTo('#side-left')
+        $('#page4,#page5,#page6').parent().css({
+            'left' : _w
+        })
+        //$('#page1,#page2,#page3').parent().appendTo('#side-left')
         $('#page1,#page2').parent().hide()
-        $('#page6,#page5,#page4').parent().appendTo('#side-right')
+        //$('#page6,#page5,#page4').parent().appendTo('#side-right')
         $('#page5,#page6').parent().hide()
 
         // hide all gradient
@@ -142,18 +151,49 @@ var Flip = function(){
         })
         container.append(_flipper)
 
-        var fb = makeDiv(_w, _h, '')
-        fb.addClass('flip-bottom')
-        var wrapper = makeWrapper(fb)
+        var fbr = makeDiv(_w, _h, '', 'flip-bottom-right')
+        var wrapper = makeWrapper(fbr)
+        var fbl = makeDiv(_w, _h, '', 'flip-bottom-left')
+        wrapper.prepend(fbl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
-        var ft = makeDiv(_w, _h, '')
-        ft.addClass('flip-top')
-        wrapper = makeWrapper(ft)
+        var ftr = makeDiv(_w, _h, '','flip-top-right')
+        wrapper = makeWrapper(ftr)
+        var ftl = makeDiv(_w, _h, '','flip-top-left')
+        wrapper.prepend(ftl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
+        fbr.addClass('flip-page').css('position','absolute')
+        fbl.addClass('flip-page').css('position','absolute')
+        ftr.addClass('flip-page').css('position','absolute')
+        ftl.addClass('flip-page').css('position','absolute')
+
+    }
+
+    function loadFlipPage() {
+
+        $('.flip-bottom-left').html(replace(
+            $('#page3')[0].contentDocument.head.innerHTML
+            +$('#page3')[0].contentDocument.body.innerHTML,
+            _pathPrefix)
+        )
+        $('.flip-top-left').html(replace(
+            $('#page2')[0].contentDocument.head.innerHTML
+            +$('#page2')[0].contentDocument.body.innerHTML,
+            _pathPrefix)
+        )
+        $('.flip-bottom-right').html(replace(
+            $('#page4')[0].contentDocument.head.innerHTML
+            +$('#page4')[0].contentDocument.body.innerHTML,
+            _pathPrefix)
+        )
+        $('.flip-top-right').html(replace(
+            $('#page5')[0].contentDocument.head.innerHTML
+            +$('#page5')[0].contentDocument.body.innerHTML,
+            _pathPrefix)
+        )
     }
 
     // make div conveniently
@@ -177,43 +217,6 @@ var Flip = function(){
         return s;
     }
 
-    function makeContentBuffer() {
-        // make page buffer
-        var lbuff=makeDiv(_w,_h,'','buffer-left')
-        lbuff.css({
-            'position':'absolute'
-        })
-        lbuff.appendTo('#side-left')
-        lbuff.hide()
-        var rbuff=makeDiv(_w,_h,'','buffer-right')
-        rbuff.css({
-            'position':'absolute'
-        })
-        rbuff.appendTo('#side-right')
-        rbuff.hide()
-
-
-    }
-    function copyIframeContentToBuffer(side) {
-        // copy iframe content to buffer
-        var bufferSource=['#page1','#page2']
-        if(side=='right') bufferSource = ['#page5','#page6']
-        var src=$(bufferSource[0])[0]
-        $('.buffer-left').html(replace(
-            src.contentDocument.head.innerHTML
-            +src.contentDocument.body.innerHTML,
-            _pathPrefix)
-        )
-
-        src=$(bufferSource[1])[0]
-        $('.buffer-right').html(replace(
-            src.contentDocument.head.innerHTML
-            +src.contentDocument.body.innerHTML,
-            _pathPrefix)
-        )
-
-    }
-
     function startFlip(bottom, top, side) {
         bottom = bottom.fn?bottom:$(bottom)
         top = top.fn?top:$(top)
@@ -224,28 +227,23 @@ var Flip = function(){
         && top[0].contentDocument.body
         if(!check) return
 
-        // copy iframe content to flipper
-        $('.flip-bottom').html(replace(
-            bottom[0].contentDocument.head.innerHTML
-            +bottom[0].contentDocument.body.innerHTML,
-            _pathPrefix)
-        )
-        $('.flip-top').html(replace(
-            top[0].contentDocument.head.innerHTML
-            +top[0].contentDocument.body.innerHTML,
-            _pathPrefix)
-        )
-
 
         $('.gradient').show()
-        if(side=='right') $('#page6').parent().show()
-        else $('#page1').parent().show()
+        $('.flip-page').hide()
+
+        if(side=='right') {
+            $('.flip-top-right,.flip-bottom-right').show()
+            $('#page6').parent().show()
+        }
+        else {
+            $('.flip-top-left,.flip-bottom-left').show()
+            $('#page1').parent().show()
+        }
         bottom.parent().hide()
         top.parent().hide()
 
         _flipper.show()
     }
-
 
     function endFlip(cancel, direction) {
 
@@ -262,13 +260,7 @@ var Flip = function(){
             transform : ''
         })
 
-        $('.flip-bottom').parent().css({
-            transform:'',
-            left:'0',
-            top:'0',
-        })
-
-        $('.flip-top').parent().css({
+        $('.flip-page').parent().css({
             transform:'',
             left:'0',
             top:'0',
@@ -280,34 +272,57 @@ var Flip = function(){
         $('.gradient').hide()
 
 
-        //$('#page1,#page2,#page3').parent().appendTo('#side-left')
-        //$('#page4,#page5,#page6').parent().appendTo('#side-right')
-
-        //$('flip-bottom').removeClass('flip-bottom')
-        //$('flip-top').removeClass('flip-top')
-
-        //$('#page1,#page2,#page5,#page6').css('visibility','hidden')
-        //$('.flip-top').css('border','')
-
-        $('#page1,#page2,#page5,#page6').parent().hide()
-        $('#page3,#page4').parent().show()
         console.log('cancel',cancel)
         if(!cancel) {
-
+            $('#page1,#page6').parent().hide()
+            $('.flip-page').hide()
             if(direction==-1) {
+                // rotate
+                $('#page1').attr('id','page-1')
+                $('#page2').attr('id','page0')
+                $('#page3').attr('id','page1')
+                $('#page4').attr('id','page2')
+                $('#page5').attr('id','page3')
+                $('#page6').attr('id','page4')
+                $('#page-1').attr('id','page5')
+                $('#page0').attr('id','page6')
                 // load next page
-                //showBuffer()
-                _book.next()
+                //_book.next()
+                _book.page+=2
+                _book.loadSingle('#page5',_book.page+1, function(){console.log('loaded page 5');loadFlipPage()})
+                _book.loadSingle('#page6',_book.page+2)
             }
             else if(direction==1){
+                // rotate
+                $('#page6').attr('id','page8')
+                $('#page5').attr('id','page7')
+                $('#page4').attr('id','page6')
+                $('#page3').attr('id','page5')
+                $('#page2').attr('id','page4')
+                $('#page1').attr('id','page3')
+                $('#page8').attr('id','page2')
+                $('#page7').attr('id','page1')
                 // load previous page
-                _book.previous()
+                //_book.previous()
+                _book.page-=2
+                _book.loadSingle('#page1',_book.page-3)
+                _book.loadSingle('#page2',_book.page-2, function(){console.log('loaded page 2');loadFlipPage()})
             }
 
         }
         else {
             //$(window).trigger('resize')
         }
+
+        $('#page1,#page2,#page5,#page6').parent().hide()
+        $('#page3,#page4').parent().show()
+        $('#page1,#page2,#page3').parent().css({
+            'left' : 0
+        })
+        $('#page4,#page5,#page6').parent().css({
+            'left' : _w
+        })
+
     }
 
     function showBuffer() {
@@ -365,9 +380,9 @@ var Flip = function(){
             //'transform':'rotateZ('+rad2deg(angle)+'deg)',
         })
 
-        reformDiv('.flip-bottom', rs.w, rs.h, -angle, distance)
-        if(distance>0) reformFlippingDivLeft('.flip-top', rs.w, rs.h, -angle, distance)
-        else reformFlippingDivRight('.flip-top', rs.w, rs.h, -angle, distance)
+        reformDiv('.flip-bottom-right', rs.w, rs.h, -angle, distance)
+        if(distance>0) reformFlippingDivLeft('.flip-top-right', rs.w, rs.h, -angle, distance)
+        else reformFlippingDivRight('.flip-top-left', rs.w, rs.h, -angle, distance)
     }
 
     function reformDiv(div, dw, dh, angle, distance) {
@@ -550,7 +565,7 @@ var Flip = function(){
             setTimeout(function(){
                 //console.log('show edge')
                 checkMousePosition(ev)
-            },500)
+            },1000)
         }
         var cancel = (distance<300)
 
@@ -727,6 +742,7 @@ var Flip = function(){
         made : made,
         replace : replace,
         zoom : zoom,
+        loadFlipPage : loadFlipPage,
     }
     // iframe load function for event bubbling
     // 현재로서는 사용안함
