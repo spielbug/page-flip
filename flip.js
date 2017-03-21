@@ -14,6 +14,7 @@ var Flip = function(){
     var _clickedEdge
     var _easing
     var _zoom=1
+    var _timerID
 
     // make each side (left, right) holder and call makeFlipper
     function make(container) {
@@ -173,7 +174,6 @@ var Flip = function(){
     }
 
     function getFrameHtml(src, target) {
-        $(target).removeClass('loaded')
         if(src[0].contentDocument.head==null||src[0].contentDocument.body==null) return ''
         src.data('stat','loading')
         return src[0].contentDocument.head.innerHTML+src[0].contentDocument.body.innerHTML
@@ -275,8 +275,9 @@ var Flip = function(){
         $('.gradient').hide()
 
 
-        console.log('cancel',cancel)
+        //console.log('cancel',cancel)
         if(!cancel) {
+            $('.flip-page').removeClass('loaded') // remove flicker
             $('#page1,#page6').parent().hide()
             $('.flip-page').hide()
             if(direction==-1) {
@@ -292,7 +293,7 @@ var Flip = function(){
                 // load next page
                 //_book.next()
                 _book.page+=2
-                _book.loadSingle('#page5',_book.page+1, function(){console.log('loaded page 5');loadFlipPage()})
+                _book.loadSingle('#page5',_book.page+1, function(){loadFlipPage()})
                 _book.loadSingle('#page6',_book.page+2)
             }
             else if(direction==1){
@@ -309,7 +310,7 @@ var Flip = function(){
                 //_book.previous()
                 _book.page-=2
                 _book.loadSingle('#page1',_book.page-3)
-                _book.loadSingle('#page2',_book.page-2, function(){console.log('loaded page 2');loadFlipPage()})
+                _book.loadSingle('#page2',_book.page-2, function(){loadFlipPage()})
             }
 
         }
@@ -488,7 +489,7 @@ var Flip = function(){
         else {
             stepFunc(1)
             endFunc()
-            console.log('done')
+            //console.log('animation done')
             _easing = false;
         }
     }
@@ -565,9 +566,12 @@ var Flip = function(){
                 case 'bottom-right':angle = 0.2;distance = 300;dx = -2*distance; dy=-100;_startPoint.direction = -1;break;
             }
 
-            setTimeout(function(){
+            _timerID = setTimeout(function(){
                 //console.log('show edge')
-                checkMousePosition(ev)
+                if($('.loaded').length==4) {
+                    console.log('show edge timed')
+                    checkMousePosition(ev)
+                }
             },1000)
         }
         var cancel = (distance<300)
@@ -608,8 +612,10 @@ var Flip = function(){
     })
 
     $(document).bind('mousemove',function(ev) {
-        checkMousePosition(ev)
-
+        if($('.loaded').length==4) {
+            console.log('show edge instant')
+            checkMousePosition(ev)
+        }
     });
 
     function checkMousePosition(ev) {
@@ -617,6 +623,7 @@ var Flip = function(){
         if(_easing) return false
         if(!$('.flip-page').hasClass('loaded')) return false
 
+        clearTimeout(_timerID)
         var x = ev.pageX
         var y = ev.pageY
         var o = _container.offset()
