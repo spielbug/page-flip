@@ -243,7 +243,7 @@ var Flip = function(){
             top.parent().hide()
             _flipper.show()
 
-        },250)
+        },500)
 
     }
 
@@ -506,7 +506,7 @@ var Flip = function(){
             },
             function () {
                 if(endFunc) endFunc()
-            }, 300, 15, 0
+            }, 600, 15, 0
         )
     }
 
@@ -556,8 +556,9 @@ var Flip = function(){
         var dy = (ev.pageY-_startPoint.y)/_zoom*1.5
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
+        var cancel = (distance/_w<0.5)
         if (distance<10) { // just clicked
-
+            cancel = false
             switch(_clickedEdge) {
                 case 'top-left':angle = 0.2;distance = 300;dx = 2*distance; dy=100;_startPoint.direction = 1;break;
                 case 'top-right':angle = -0.2;distance = 300;dx = -2*distance; dy=100;_startPoint.direction = -1;break;
@@ -567,7 +568,6 @@ var Flip = function(){
 
             checkMousePositionDelayed(ev)
         }
-        var cancel = (distance<300)
 
         if(dx<0) {
             distance=-distance
@@ -597,7 +597,7 @@ var Flip = function(){
                 //console.log(angle-step*angle,equation(distance, step))
                 reformFlipper(null, null, angle - step*angle, equation(distance, step))
             },function(done){
-                console.log('done')
+                //console.log('done')
                 endFlip(cancel, direction)
                 _startPoint = undefined
                 _edgeShown = false

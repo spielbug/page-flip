@@ -208,7 +208,7 @@ var Loader = function(epubPath, loaded) {
     }
 
     function loadSingle(holder, page, callback) {
-        console.log('callback',callback)
+        //console.log('callback',callback)
         if(callback) _callback = callback
         holder=(holder.fn)?holder:$(holder)
         var file = _book.toc.eq(page-1)
