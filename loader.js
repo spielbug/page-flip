@@ -22,6 +22,7 @@ var Loader = function(epubPath, loaded) {
         next : next,
         previous : previous,
         load : load,
+        loadSingle : loadSingle
     }
 
     // read epup manifest
@@ -197,5 +198,12 @@ var Loader = function(epubPath, loaded) {
         ret.page = _curPage
     }
 
+    function loadSingle(holder, page, callback) {
+        _callback = callback
+        holder=(holder.fn)?holder:$(holder)
+        var file = _book.toc.eq(page-1)
+        var fullPath = 'epub/'+_book.rootFilePath+file.attr('href').replace('content/','')
+        holder.attr('src',fullPath)
+    }
     return { result: ret }
 }
