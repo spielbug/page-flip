@@ -116,7 +116,8 @@ var Loader = function(epubPath, loaded) {
             p.text(_book.title)
             //$(this).removeClass('empty')
         }
-        $(this).show()
+        //$(this).show()
+        $(this).addClass('loaded')
         _loadCount++;
         //console.log('frames loaded',_loadCount)
         if(_loadCount==_loadTrigger) {
@@ -174,7 +175,8 @@ var Loader = function(epubPath, loaded) {
                 _holders[i].addClass('empty')
             }
             //console.log(fullPath);
-            _holders[i].hide();
+            //_holders[i].hide();
+            _holders[i].removeClass('loaded')
             _holders[i].attr('src', fullPath+'?wmode=transparent')
             _holders[i].data('page',page)
 

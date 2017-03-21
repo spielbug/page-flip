@@ -232,14 +232,14 @@ var Flip = function(){
 
 
         $('.gradient').show()
-        $('.flip-page').hide()
+        $('.flip-page').show()
 
         if(side=='right') {
-            $('.flip-top-right,.flip-bottom-right').show()
+            $('.flip-top-left,.flip-bottom-left').hide()
             $('#page6').parent().show()
         }
         else {
-            $('.flip-top-left,.flip-bottom-left').show()
+            $('.flip-top-right,.flip-bottom-right').hide()
             $('#page1').parent().show()
         }
         bottom.parent().hide()
@@ -568,7 +568,7 @@ var Flip = function(){
 
             _timerID = setTimeout(function(){
                 //console.log('show edge')
-                if($('.loaded').length==4) {
+                if($('.loaded').length==10) {
                     console.log('show edge timed')
                     checkMousePosition(ev)
                 }
@@ -612,8 +612,8 @@ var Flip = function(){
     })
 
     $(document).bind('mousemove',function(ev) {
-        if($('.loaded').length==4) {
-            console.log('show edge instant')
+        if(!_timerID) {
+
             checkMousePosition(ev)
         }
     });
@@ -621,9 +621,10 @@ var Flip = function(){
     function checkMousePosition(ev) {
         if(!_container) return false
         if(_easing) return false
-        if(!$('.flip-page').hasClass('loaded')) return false
+        if($('.loaded').length<10) return false
 
         clearTimeout(_timerID)
+        _timerID = undefined
         var x = ev.pageX
         var y = ev.pageY
         var o = _container.offset()
