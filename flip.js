@@ -176,6 +176,7 @@ var Flip = function(){
     }
 
     function getFrameHtml(src, target) {
+        //$(target).attr('src',src.attr('src'))
         if(src[0].contentDocument.head==null||src[0].contentDocument.body==null) return ''
         src.data('stat','loading')
         return src[0].contentDocument.head.innerHTML+src[0].contentDocument.body.innerHTML
@@ -229,7 +230,7 @@ var Flip = function(){
         // show pages in flipper
 
         $('.gradient').show()
-
+        $('.flip-page').hide()
         setTimeout(function(){
             if(side=='right') {
                 $('.flip-bottom-right').show()
@@ -734,7 +735,7 @@ var Flip = function(){
         // _w *= zx
         // _h *= zy
 
-        z-=0.05
+        z-=0.06
         _zoom = z
 
         _container.css({
