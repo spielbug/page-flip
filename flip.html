@@ -506,6 +506,35 @@
         }
     })
 
+    // nav element events
+    $('.nav-next').bind('click',function(){
+        $('.nav-next').css('background','url("images/arrow_right_press.png")')
+        _book.next(function(){
+            _flip.loadFlipPage()
+            $('.nav-next').css('background','url("images/arrow_right.png")')
+        })
+    })
+    $('.nav-previous').bind('click',function(){
+        $('.nav-previous').css('background','url("images/arrow_left_press.png")')
+        _book.previous(function(){
+            _flip.loadFlipPage()
+            $('.nav-previous').css('background','url("images/arrow_left.png")')
+        })
+    })
+    $('.nav-first').bind('click',function(){
+        $('.nav-first').css('background','url("images/arrow_first_left_press.png")')
+        _book.go(1,function(){
+            _flip.loadFlipPage()
+            $('.nav-first').css('background','url("images/arrow_first_left.png")')
+        })
+    })
+    $('.nav-last').bind('click',function(){
+        $('.nav-last').css('background','url("images/arrow_last_right_press.png")')
+        _book.go(_book.totalPages, function(){
+            _flip.loadFlipPage()
+            $('.nav-last').css('background','url("images/arrow_last_right.png")')
+        })
+    })
 
 </script>
 
