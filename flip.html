@@ -475,7 +475,9 @@
                 var dx = ev.pageX-_paginationEvent.startPosition
                 var pw = $('.pagination-progress').width()
                 var nx = (pw + dx)/base*100
-                var page = parseInt((pw + dx)/(base-$('.ico-hide').width()-30)*_book.totalPages)
+                var hiderMargin = $('.ico-hide').width()+30
+                //var page = parseInt((pw + dx)/(base-hiderMargin)*_book.totalPages)
+                var page = parseInt((pw + dx)/(base)*_book.totalPages)
                 if(page>0 && page<=_book.totalPages) {
                     $('.pagination-progress').css({width: nx + '%'})
                     $('.pagination-cursor').css({left: nx + '%'})
@@ -494,7 +496,11 @@
 
     $(document).bind('mouseup', function(ev){
         if(_paginationEvent && _paginationEvent.startPosition) {
-            _book.go(_paginationEvent.page)
+            // make odd when double mode
+            var page = _paginationEvent.page
+            if(page%2==0) page++
+
+            _book.go(page, _flip.loadFlipPage)
             _paginationEvent = undefined
 
         }

@@ -630,19 +630,22 @@ var Flip = function(){
         var o = _container.offset()
 
         //console.log(x,y,o)
+        console.log(_book.page)
 
         if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
+            console.log('left top')
             if(_edgeShown) return
-            if(_book.page<=1) return
+            if(_book.page<=1) return true // true means don't retry
             _edgeShown = true
             _edgeAngle = 45
             _edgeSize = _w * _edge / 1.414 / 2
             startFlip('#page3', '#page2', 'left')
+            console.log(_book.page)
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
-            if(_book.page<=1) return
+            if(_book.page<=1) return true
             _edgeShown = true
             _edgeAngle = -45
             _edgeSize = _w * _edge / 1.414 / 2
@@ -651,7 +654,7 @@ var Flip = function(){
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
-            if(_book.page>=_book.totalPages) return
+            if(_book.page>=_book.totalPages) return true
             _edgeShown = true
             _edgeAngle = -45
             _edgeSize = -_w * _edge / 1.414 / 2
@@ -660,7 +663,7 @@ var Flip = function(){
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
-            if(_book.page>=_book.totalPages) return
+            if(_book.page>=_book.totalPages) return true
             _edgeShown = true
             _edgeSize = -_w * _edge / 1.414 / 2
             _edgeAngle = 45
