@@ -25,7 +25,8 @@ var Loader = function(epubPath, loaded) {
         load : load,
         loadSingle : loadSingle,
         resetLoadCount : function(){_loadCount=0},
-        setTrigger : function(callback){_trigger=callback}
+        setTrigger : function(callback){_trigger=callback},
+        pageSize : function() { return {width:_w, height:_h} }
     }
 
     // read epup manifest
@@ -33,6 +34,7 @@ var Loader = function(epubPath, loaded) {
         url : containerXML,
         dataType : 'xml',
         success : function(content) {
+            //console.log(content)
             var fullPath = $(content).find('rootfile').attr('full-path')
             ret.rootFile = fullPath
             ret.rootFilePath = fullPath.substr(0, fullPath.lastIndexOf('/')+1)
@@ -45,11 +47,11 @@ var Loader = function(epubPath, loaded) {
             url: epubPath+path,
             dataType : 'xml',
             success: function (content) {
-
+                //console.log(content)
                 content = $(content)
                 var metadata = content.find('metadata')
-                var items = content.find('item')
-                var spine = content.find('itemref')
+                var manifest = content.find('manifest')
+                var spine = content.find('spine')
                 // to get elements use chlidren
                 // but to get nodes use chlidNodes
                 var childs = metadata[0].childNodes
@@ -62,8 +64,9 @@ var Loader = function(epubPath, loaded) {
                 }
 
                 ret.metadata = metadata
-                ret.items = items
+                ret.manifest = manifest
                 ret.spine = spine
+                ret.totalPages = spine.children().length
                 var toc = content.find('#toc').attr('href')
                 ret.tocFile = toc
                 readTOC(ret.rootFilePath+toc)
@@ -78,7 +81,7 @@ var Loader = function(epubPath, loaded) {
             success: function (content) {
                 content = $(content)
                 ret.toc = content.find('#toc a')
-                ret.totalPages = ret.toc.length
+                //ret.totalPages = ret.toc.length
 
                 if(loaded) loaded()
             }
@@ -101,13 +104,21 @@ var Loader = function(epubPath, loaded) {
     $('iframe').load(function(evt) {
 
         var body=this.contentDocument.body
-        _w = parseInt(body.style.width)
-        _h = parseInt(body.style.height)
-        var hr = 500/_w
-        var vr = 500/_h
-        // console.log(hr,vr)
-        $(this).width(_w)
-        $(this).height(_h)
+        if($(this).hasClass('empty')) {
+            var width = _w || parseInt(body.style.width)
+            var height = _h || parseInt(body.style.height)
+            $(this).width(_w)
+            $(this).height(_h)
+        }
+        else {
+            _w = parseInt(body.style.width)
+            _h = parseInt(body.style.height)
+            var hr = 500/_w
+            var vr = 500/_h
+            // console.log(hr,vr)
+            $(this).width(_w)
+            $(this).height(_h)
+        }
         //$(this).siblings().width(w)
         //$(this).siblings().height(h)
         if($(this).hasClass('empty')) {
@@ -164,11 +175,14 @@ var Loader = function(epubPath, loaded) {
         // console.log('pages',pages)
         // console.log('page',_curPage)
         for(var i=0; i<_book.totalPages && i<pages.length ; i++) {
+            //console.log(i,ret.totalPages)
             var page = pages[i]
             var pageIndex = page-1
             //console.log(page, pageIndex)
-            var file = _book.toc.eq(pageIndex)
-            var fullPath = 'epub/'+_book.rootFilePath+file.attr('href').replace('content/','')
+            //var file = _book.toc.eq(pageIndex)
+            var idref = ret.spine.children().eq(pageIndex).attr('idref')
+            var file = ret.manifest.find('[id="'+idref+'"]')
+            var fullPath = 'epub/'+_book.rootFilePath+file.attr('href')
             if(page <= 0 || page > ret.totalPages) {
                 // empty page
                 fullPath = 'empty.html'
@@ -211,8 +225,10 @@ var Loader = function(epubPath, loaded) {
         //console.log('callback',callback)
         if(callback) _callback = callback
         holder=(holder.fn)?holder:$(holder)
-        var file = _book.toc.eq(page-1)
-        var fullPath = 'epub/'+_book.rootFilePath+file.attr('href').replace('content/','')
+        //var file = _book.toc.eq(page-1)
+        var idref = ret.spine.children().eq(page-1).attr('idref')
+        var file = ret.manifest.find('[id="'+idref+'"]')
+        var fullPath = 'epub/'+_book.rootFilePath+file.attr('href')
         if(page <= 0 || page > ret.totalPages) {
             // empty page
             fullPath = 'empty.html'

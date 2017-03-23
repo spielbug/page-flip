@@ -24,6 +24,8 @@ var Flip = function(){
         var metricDiv = $('#page4')
         _w = metricDiv.width()
         _h = metricDiv.height()
+
+        // resize container
         container.width(_w*2)
         container.height(_h)
 
