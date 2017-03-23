@@ -7,7 +7,7 @@ const _pathPrefix = 'epub/OEBPS/content/';
 
 var Flip = function(){
     var _w, _h, _flipper, _left, _right, _made, _container;
-    var _edge=0.1, _edgeShown = false
+    var _edge=0.06, _edgeShown = false
     var _startPoint
     var _edgeAngle
     var _edgeSize
@@ -40,7 +40,7 @@ var Flip = function(){
         var edgeRight = makeDiv(_w*_edge,_h,'edge-left')
         edgeRight.css ({
             position:'absolute',
-            left:(_w*(2-0.1))+'px',
+            left:(_w*(2-_edge))+'px',
             top:'0px',
         })
         container.append(edgeLeft)
@@ -630,7 +630,7 @@ var Flip = function(){
         var o = _container.offset()
 
         //console.log(x,y,o)
-        console.log(_book.page)
+        //console.log(_book.page)
 
         if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
             console.log('left top')
@@ -638,7 +638,7 @@ var Flip = function(){
             if(_book.page<=1) return true // true means don't retry
             _edgeShown = true
             _edgeAngle = 45
-            _edgeSize = _w * _edge / 1.414 / 2
+            _edgeSize = _w * _edge / 1.414
             startFlip('#page3', '#page2', 'left')
             console.log(_book.page)
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
@@ -648,7 +648,7 @@ var Flip = function(){
             if(_book.page<=1) return true
             _edgeShown = true
             _edgeAngle = -45
-            _edgeSize = _w * _edge / 1.414 / 2
+            _edgeSize = _w * _edge / 1.414
             startFlip('#page3', '#page2', 'left')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
@@ -657,7 +657,7 @@ var Flip = function(){
             if(_book.page>=_book.totalPages) return true
             _edgeShown = true
             _edgeAngle = -45
-            _edgeSize = -_w * _edge / 1.414 / 2
+            _edgeSize = -_w * _edge / 1.414
             startFlip('#page4', '#page5', 'right')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
@@ -665,7 +665,7 @@ var Flip = function(){
             if(_edgeShown) return
             if(_book.page>=_book.totalPages) return true
             _edgeShown = true
-            _edgeSize = -_w * _edge / 1.414 / 2
+            _edgeSize = -_w * _edge / 1.414
             _edgeAngle = 45
             startFlip('#page4', '#page5', 'right')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
@@ -697,6 +697,7 @@ var Flip = function(){
         else {
             if(!_edgeShown) return
             _edgeShown = false
+            // clear timeout
             easeEdge(_edgeAngle, function(step) { return _edgeSize * (1-step*0.999) },
                 function() {
                     endFlip(true, _edgeSize>0?1:-1)
