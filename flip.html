@@ -87,14 +87,30 @@
             left:50%;
             background:url('images/bottomMenu_sliderBtn.png');
         }
+        .pagination-info {
+            position:absolute;
+            width:93px;
+            height:35px;
+            top:-40px;
+            margin-left:-47px;
+            left:50%;
+            background:url('images/bottomMenu_pagebg.png');
+            text-align: center;
+            vertical-align: middle;
+            font-family: Helvetica;
+            font-size:14pt;
+            display:none;
+        }
         /* title element */
         .title-pane {
             position: absolute;
-            top: 44px;
+            top: 45px;
             left: 0px;
             width: 100%;
             height: 43px;
             background: white;
+            vertical-align: middle;
+            border-top : 1px solid silver;
             box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
         }
 
@@ -102,12 +118,15 @@
             position: absolute;
             top: 9px;
             left: 50%;
-            margin-left:-250px;
-            width: 500px;
+            margin-left:-25%;
+            width: 50%;
             height: 25px;
             border : 1px solid silver;
-            padding-top : 3px;
             text-align: center;
+            padding-top: 2px;
+            font-family: Helvetica;
+            font-size:14pt;
+
         }
         .ico-edit {
             position: absolute;
@@ -136,12 +155,12 @@
             margin-left:auto;
             margin-right:auto;
         }
-        .tool-box .size-52-43 {
+        .size-52-43 {
             display:inline-block;
             width:52px;
             height:43px;
         }
-        .tool-box .size-72-43 {
+        .size-72-43 {
             display:inline-block;
             width:72px;
             height:43px;
@@ -258,6 +277,15 @@
         }
         .nav-value {
             width:70px;
+            color:gray;
+            text-align:right;
+            font-family: Helvetica;
+            font-size:12pt;
+        }
+        .nav-total {
+            color:gray;
+            font-family: Helvetica;
+            font-size:12pt;
         }
         .nav-float {
             position:absolute;
@@ -267,10 +295,10 @@
             margin-top:-72px;
         }
         .nav-left {
-            left:0px;
+            left:20px;
         }
         .nav-right {
-            right:0px;
+            right:20px;
         }
         .nav-previous {
             width:40px;
@@ -316,6 +344,7 @@
     <div class="pagination-pane">
         <div class="pagination-progress"></div>
         <div class="pagination-cursor hand"></div>
+        <div class="pagination-info">1</div>
     </div>
     <div class="tool-pane">
         <div class="tool-box">
@@ -328,7 +357,7 @@
             <div class="ico-zoom size-52-43 hand"></div>
             <div class="nav-pane">
                 <span class="nav-current"><input type="text" class="nav-value"></span>
-                <span class="nav-total">/456</span>
+                <span class="nav-total"></span>
             </div>
             <div class="ico-history size-52-43 hand"></div>
             <div class="ico-view-mode size-52-43 hand"></div>
@@ -420,11 +449,57 @@
         _book.registerHolders(['#page1','#page2','#page3','#page4','#page5','#page6'])
         _book.start(function(){
             $('.title-box').text(_book.title)
+            $('.nav-total').text(' / '+_book.totalPages)
             _flip.make('#fb')
             $('#fb').show()
         })
 
     }).result
+
+
+    // pagination event
+    var _paginationEvent = undefined
+    // event handler
+    $('.pagination-cursor').bind('mousedown',function(ev){
+        _paginationEvent = {}
+    })
+
+    $(document).bind('mousemove', function(ev){
+        if(_paginationEvent) {
+            ev.preventDefault()
+            ev.stopPropagation()
+            if(_paginationEvent.startPosition) {
+                $('.pagination-info').show()
+                // calc meta
+                var base = $('.pagination-pane').width()
+                var dx = ev.pageX-_paginationEvent.startPosition
+                var pw = $('.pagination-progress').width()
+                var nx = (pw + dx)/base*100
+                var page = parseInt((pw + dx)/(base-$('.ico-hide').width()-30)*_book.totalPages)
+                if(page>0 && page<=_book.totalPages) {
+                    $('.pagination-progress').css({width: nx + '%'})
+                    $('.pagination-cursor').css({left: nx + '%'})
+                    $('.pagination-info').css({left: nx + '%'})
+                    $('.pagination-info').text(page)
+                    _paginationEvent.page = page
+                }
+
+                _paginationEvent.startPosition=pw+dx
+            }
+            else {
+                _paginationEvent.startPosition=ev.pageX
+            }
+        }
+    })
+
+    $(document).bind('mouseup', function(ev){
+        if(_paginationEvent && _paginationEvent.startPosition) {
+            _book.go(_paginationEvent.page)
+            _paginationEvent = undefined
+
+        }
+    })
+
 
 </script>
 

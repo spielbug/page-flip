@@ -466,13 +466,13 @@ var Flip = function(){
         if(distance>0) {
             g.css({
                 background : 'linear-gradient('+(angle-Math.PI/2)+'rad, transparent 0px, transparent '+(distance-100)
-                +'px, rgba(0,0,0,'+(0.2*(1-distance/_w))+') '+(distance-20)+'px, transparent '+(distance)+'px)'
+                +'px, rgba(0,0,0,'+(0.3*(1.1-distance/_w))+') '+(distance-20)+'px, transparent '+(distance)+'px)'
             })
         }
         else {
             g.css({
                 background : 'linear-gradient('+(angle+Math.PI/2)+'rad, transparent 0px, transparent '+(-distance-100)
-                +'px, rgba(0,0,0,'+0.2*(1+distance/_w)+') '+(-distance-20)+'px, transparent '+(-distance)+'px)'
+                +'px, rgba(0,0,0,'+0.3*(1.1+distance/_w)+') '+(-distance-20)+'px, transparent '+(-distance)+'px)'
             })
         }
     }
@@ -558,7 +558,7 @@ var Flip = function(){
         var dy = (ev.pageY-_startPoint.y)/_zoom*1.5
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
-        var cancel = (distance/_w<0.5)
+        var cancel = (distance/_w<0.4)
         if (distance<10) { // just clicked
             cancel = false
             switch(_clickedEdge) {
@@ -636,7 +636,7 @@ var Flip = function(){
             if(_book.page<=1) return
             _edgeShown = true
             _edgeAngle = 45
-            _edgeSize = _w * _edge / 1.414
+            _edgeSize = _w * _edge / 1.414 / 2
             startFlip('#page3', '#page2', 'left')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
@@ -645,7 +645,7 @@ var Flip = function(){
             if(_book.page<=1) return
             _edgeShown = true
             _edgeAngle = -45
-            _edgeSize = _w * _edge / 1.414
+            _edgeSize = _w * _edge / 1.414 / 2
             startFlip('#page3', '#page2', 'left')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
@@ -654,7 +654,7 @@ var Flip = function(){
             if(_book.page>=_book.totalPages) return
             _edgeShown = true
             _edgeAngle = -45
-            _edgeSize = -_w * _edge / 1.414
+            _edgeSize = -_w * _edge / 1.414 / 2
             startFlip('#page4', '#page5', 'right')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
@@ -662,7 +662,7 @@ var Flip = function(){
             if(_edgeShown) return
             if(_book.page>=_book.totalPages) return
             _edgeShown = true
-            _edgeSize = -_w * _edge / 1.414
+            _edgeSize = -_w * _edge / 1.414 / 2
             _edgeAngle = 45
             startFlip('#page4', '#page5', 'right')
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)

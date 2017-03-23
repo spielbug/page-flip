@@ -22,6 +22,7 @@ var Loader = function(epubPath, loaded) {
         start : start,
         next : next,
         previous : previous,
+        go : go,
         load : load,
         loadSingle : loadSingle,
         setLoadTrigger : function(val) { _loadTrigger=val },
@@ -141,7 +142,24 @@ var Loader = function(epubPath, loaded) {
         if(_callback) {
             _callback()
         }
+
+        // refresh page
+        $('.nav-value').val((_book.page-1)+'-'+_book.page)
+        var progress=_book.page/_book.totalPages*100
+        $('.pagination-progress').css('width',progress+'%')
+        $('.pagination-cursor').css('left',progress+'%')
+        $('.pagination-info').css('left',progress+'%')
+        $('.pagination-info').hide()
+
     })
+
+    function go(page, callback) {
+        _loadCount = 0
+        _trigger = callback
+        _curPage=page
+        var pages=[page-3,page-2,page-1,page,page+1,page+2]
+        load(pages)
+    }
 
     function start(callback) {
         _trigger = callback
