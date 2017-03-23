@@ -247,7 +247,6 @@ var Flip = function(){
             _flipper.show()
 
         },500)
-
     }
 
     function endFlip(cancel, direction) {
@@ -502,14 +501,14 @@ var Flip = function(){
         return false
     }
 
-    function easeEdge(angle, stepFunc, endFunc) {
+    function easeEdge(angle, stepFunc, endFunc, msec) {
         ease(EasingFunctions.easeInOutQuad,
             function (step) {
                 reformFlipper(null, null, deg2rad(angle), stepFunc(step))
             },
             function () {
                 if(endFunc) endFunc()
-            }, 600, 15, 0
+            }, msec, 15, 0
         )
     }
 
@@ -639,7 +638,7 @@ var Flip = function(){
             _edgeAngle = 45
             _edgeSize = _w * _edge / 1.414
             startFlip('#page3', '#page2', 'left')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
@@ -648,7 +647,7 @@ var Flip = function(){
             _edgeAngle = -45
             _edgeSize = _w * _edge / 1.414
             startFlip('#page3', '#page2', 'left')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
@@ -657,7 +656,7 @@ var Flip = function(){
             _edgeAngle = -45
             _edgeSize = -_w * _edge / 1.414
             startFlip('#page4', '#page5', 'right')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
             if(_edgeShown) return
@@ -666,7 +665,7 @@ var Flip = function(){
             _edgeSize = -_w * _edge / 1.414
             _edgeAngle = 45
             startFlip('#page4', '#page5', 'right')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step})
+            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if(_startPoint) {
             var dx = (ev.pageX-_startPoint.x)/_zoom*1.5
@@ -698,7 +697,7 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * (1-step*0.999) },
                 function() {
                     endFlip(true, _edgeSize>0?1:-1)
-                })
+                }, 500)
         }
         return true
     }

@@ -76,14 +76,14 @@
             position:relative;
             width:50%;
             height:100%;
-            background : #0263d2;
+            background : #027afe;
         }
         .pagination-cursor {
             position:absolute;
             width:15px;
             height:15px;
             top:-7px;
-            left-margin:-7px;
+            margin-left:-7px;
             left:50%;
             background:url('images/bottomMenu_sliderBtn.png');
         }
@@ -111,8 +111,7 @@
         }
         .ico-edit {
             position: absolute;
-            left : 100%;
-            margin-left:-81px;
+            right:0px;
             width : 81px;
             height : 43px;
             background : url('images/bottomMenu_edit_normal.png');
@@ -122,7 +121,183 @@
             background : url('images/bottomMenu_edit_over.png');
         }
         /* tool element */
+        .hand {
+            cursor:pointer;
+        }
+        .tool-pane {
+            position:relative;
+            width:100%;
+            height:43px;
+            text-align: center;
+        }
 
+        .tool-box {
+            position : relative;
+            margin-left:auto;
+            margin-right:auto;
+        }
+        .tool-box .size-52-43 {
+            display:inline-block;
+            width:52px;
+            height:43px;
+        }
+        .tool-box .size-72-43 {
+            display:inline-block;
+            width:72px;
+            height:43px;
+        }
+        .ico-index {
+            background:url('images/bottomMenu_indexList_btn_01.png');
+        }
+        .ico-index:hover {
+            background:url('images/bottomMenu_indexList_btn_02.png');
+        }
+        .ico-search {
+            background:url('images/bottomMenu_search_btn_01.png');
+        }
+        .ico-search:hover {
+            background:url('images/bottomMenu_search_btn_02.png');
+        }
+        .ico-memo {
+            background:url('images/bottomMenu_memo_btn_01.png');
+        }
+        .ico-memo:hover {
+            background:url('images/bottomMenu_memo_btn_02.png');
+        }
+        .ico-draw {
+            background:url('images/bottomMenu_draw_btn_01.png');
+        }
+        .ico-draw:hover {
+            background:url('images/bottomMenu_draw_btn_02.png');
+        }
+        .ico-link {
+            background:url('images/bottomMenu_link_btn_01.png');
+        }
+        .ico-link:hover {
+            background:url('images/bottomMenu_link_btn_02.png');
+        }
+        .ico-share {
+            background:url('images/bottomMenu_share_btn_01.png');
+        }
+        .ico-share:hover {
+            background:url('images/bottomMenu_share_btn_02.png');
+        }
+        .ico-zoom {
+            background:url('images/bottomMenu_zoom_in_btn_01.png');
+        }
+        .ico-zoom:hover {
+            background:url('images/bottomMenu_zoom_in_btn_02.png');
+        }
+        .ico-history {
+            background:url('images/bottomMenu_history_01.png');
+        }
+        .ico-history:hover {
+            background:url('images/bottomMenu_history_02.png');
+        }
+        .ico-view-mode {
+            background:url('images/bottomMenu_pageMode_Single_01.png');
+        }
+        .ico-view-mode:hover {
+            background:url('images/bottomMenu_pageMode_Single_02.png');
+        }
+        .ico-thumbnail {
+            background:url('images/bottomMenu_thumbnail_01.png');
+        }
+        .ico-thumbnail:hover {
+            background:url('images/bottomMenu_thumbnail_02.png');
+        }
+        .ico-fullscreen {
+            background:url('images/bottomMenu_FullScreen_btn_01.png');
+        }
+        .ico-fullscreen:hover {
+            background:url('images/bottomMenu_FullScreen_btn_02.png');
+        }
+        .ico-print {
+            background:url('images/bottomMenu_print_btn_01.png');
+        }
+        .ico-print:hover {
+            background:url('images/bottomMenu_print_btn_02.png');
+        }
+        .ico-login {
+            background:url('images/bottomMenu_login_btn_01.png');
+        }
+        .ico-login:hover {
+            background:url('images/bottomMenu_login_btn_02.png');
+        }
+        .ico-close-window {
+            position:absolute;
+            width:52px;
+            height:43px;
+            top:0px;
+            right:0px;
+            background:url('images/bottomMenu_windowclose_btn_01.png');
+        }
+        .ico-close-window:hover {
+            background:url('images/bottomMenu_windowclose_btn_02.png');
+        }
+        .ico-hide {
+            position:absolute;
+            width:70px;
+            height:32px;
+            top:-32px;
+            right:0px;
+            background:url('images/bottomArrowUp_btn_01.png');
+        }
+        .ico-hide:hover {
+            background:url('images/bottomArrowUp_btn_02.png');
+        }
+        .nav-pane {
+            display:inline-block;
+            width:150px;
+            height:43px;
+            vertical-align: top;
+            padding-top:10px;
+        }
+        .nav-current {
+
+        }
+        .nav-value {
+            width:70px;
+        }
+        .nav-float {
+            position:absolute;
+            width:40px;
+            height:144px;
+            top:50%;
+            margin-top:-72px;
+        }
+        .nav-left {
+            left:0px;
+        }
+        .nav-right {
+            right:0px;
+        }
+        .nav-previous {
+            width:40px;
+            height:80px;
+            background:url('images/arrow_left.png');
+        }
+        .nav-separator {
+            width:18px;
+            height:3px;
+            margin-left:11px;
+            background:url('images/arrow_line.png');
+        }
+        .nav-first {
+            width:40px;
+            height:61px;
+            background:url('images/arrow_first_left.png');
+        }
+        .nav-next {
+            width:40px;
+            height:80px;
+            background:url('images/arrow_right.png');
+        }
+        .nav-last {
+            width:40px;
+            height:61px;
+            background:url('images/arrow_last_right.png');
+        }
     </style>
 </head>
 <body>
@@ -140,31 +315,44 @@
     </div>
     <div class="pagination-pane">
         <div class="pagination-progress"></div>
-        <div class="pagination-cursor"></div>
+        <div class="pagination-cursor hand"></div>
     </div>
     <div class="tool-pane">
         <div class="tool-box">
-            <div class="ico-index"></div>
-            <div class="ico-search"></div>
-            <div class="ico-memo"></div>
-            <div class="ico-draw"></div>
-            <div class="ico-link"></div>
-            <div class="ico-zoom"></div>
+            <div class="ico-index size-52-43 hand"></div>
+            <div class="ico-search size-52-43 hand"></div>
+            <div class="ico-memo size-52-43 hand"></div>
+            <div class="ico-draw size-52-43 hand"></div>
+            <div class="ico-link size-52-43 hand"></div>
+            <div class="ico-share size-52-43 hand"></div>
+            <div class="ico-zoom size-52-43 hand"></div>
             <div class="nav-pane">
-
+                <span class="nav-current"><input type="text" class="nav-value"></span>
+                <span class="nav-total">/456</span>
             </div>
-            <div class="ico-history"></div>
-            <div class="ico-view-mode"></div>
-            <div class="ico-thumbnail"></div>
-            <div class="ico-fullscreen"></div>
-            <div class="ico-print"></div>
+            <div class="ico-history size-52-43 hand"></div>
+            <div class="ico-view-mode size-52-43 hand"></div>
+            <div class="ico-thumbnail size-52-43 hand"></div>
+            <div class="ico-fullscreen size-52-43 hand"></div>
+            <div class="ico-print size-52-43 hand"></div>
+            <div class="ico-login size-72-43 hand"></div>
         </div>
-        <div class="tool-close-window"></div>
-        <div class="tool-hide"></div>
+        <div class="ico-close-window hand"></div>
+        <div class="ico-hide hand"></div>
     </div>
     <div class="title-pane">
         <div class="title-box"></div>
-        <div class="ico-edit"></div>
+        <div class="ico-edit hand"></div>
+    </div>
+    <div class="nav-float nav-left">
+        <div class="nav-previous hand"></div>
+        <div class="nav-separator"></div>
+        <div class="nav-first hand"></div>
+    </div>
+    <div class="nav-float nav-right">
+        <div class="nav-next hand"></div>
+        <div class="nav-separator"></div>
+        <div class="nav-last hand"></div>
     </div>
 </div>
 <!--<div id="fb-control" style="position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:10;"></div>-->

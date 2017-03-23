@@ -24,6 +24,7 @@ var Loader = function(epubPath, loaded) {
         previous : previous,
         load : load,
         loadSingle : loadSingle,
+        setLoadTrigger : function(val) { _loadTrigger=val },
         resetLoadCount : function(){_loadCount=0},
         setTrigger : function(callback){_trigger=callback},
         pageSize : function() { return {width:_w, height:_h} }
