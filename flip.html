@@ -19,6 +19,20 @@
             margin: 0px;
             padding: 0px;
             overflow: hidden !important;
+            background:#ffffff
+        }
+        html {
+            background-color: #ffffff;
+            /* Or any color / image you want */
+        }
+        body:fullscreen {
+            background-color: rgba(255,255,255,0);
+        }
+        body:-webkit-full-screen {
+            background-color: rgba(255,255,255,0);
+        }
+        body:-moz-full-screen {
+            background-color: rgba(255,255,255,0);
         }
         #fb {
             position:relative;
@@ -231,6 +245,13 @@
         .ico-fullscreen:hover {
             background:url('images/bottomMenu_FullScreen_btn_02.png');
         }
+        .window-mode {
+            background:url('images/bottomMenu_windowScreen_btn_01.png')
+        }
+        .window-mode:hover {
+            background:url('images/bottomMenu_windowScreen_btn_02.png')
+        }
+
         .ico-print {
             background:url('images/bottomMenu_print_btn_01.png');
         }
@@ -388,9 +409,10 @@
 
 <!-- you will need jquery somewhere -->
 <script src="libs/jquery.js"></script>
+<script src="jquery.fullscreen-min.js"></script>
 <script src="flip.js"></script>
 <script src="loader.js"></script>
-
+<script src="libs/scissor.js"></script>
 <script>
 
     _flip = Flip()
@@ -535,7 +557,19 @@
             $('.nav-last').css('background','url("images/arrow_last_right.png")')
         })
     })
-
+    $('.ico-fullscreen').bind('click',function(ev) {
+        ev.stopPropagation()
+        var elem = $(document)
+        if(window.navigator.userAgent.indexOf('Trident')>-1) elem = $(document.body)
+        if (elem.fullScreen()) {
+            elem.fullScreen(false)
+            $('.ico-fullscreen').removeClass('window-mode')
+        }
+        else {
+            elem.fullScreen(true)
+            $('.ico-fullscreen').addClass('window-mode')
+        }
+    })
 </script>
 
 </body>
