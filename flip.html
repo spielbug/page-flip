@@ -530,26 +530,17 @@
 
     $(document).bind('mouseup', function(ev){
         if(_paginationEvent && _paginationEvent.startPosition) {
-            // make odd when double mode
-            var page = _paginationEvent.page
-            if(page%2==0) page++
-
-            _book.go(page, _flip.loadFlipPage)
+            _book.go(_paginationEvent.page, _flip.loadFlipPage)
             _paginationEvent = undefined
-
         }
     })
 
     // nav element events
     $('.nav-next').bind('click',function(){
-        _book.next(function(){
-            _flip.loadFlipPage()
-        })
+        _flip.flipNext()
     })
     $('.nav-previous').bind('click',function(){
-        _book.previous(function(){
-            _flip.loadFlipPage()
-        })
+        _flip.flipPrevious()
     })
     $('.nav-first').bind('click',function(){
         _book.go(1,function(){
@@ -560,6 +551,25 @@
         _book.go(_book.totalPages, function(){
             _flip.loadFlipPage()
         })
+    })
+    $('.nav-value').bind('click',function() {
+        $(this).select()
+    })
+    $('.nav-value').bind('keypress',function(ev) {
+        var val = parseInt($(this).val())
+        if (ev.keyCode == 13) {
+            if (val) {
+                $(this).blur()
+                _book.go(val)
+            }
+            else {
+                alert('please type page number')
+            }
+        }
+        else if(ev.keyCode==27) {
+            $(this).blur()
+            $(this).val((_book.page - 1) + '-' + _book.page)
+        }
     })
 
     $('.ico-fullscreen').bind('click',function(ev) {

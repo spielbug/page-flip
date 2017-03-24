@@ -223,9 +223,10 @@ var Flip = function(){
         return s;
     }
 
-    function startFlip(bottom, top, side) {
+    function startFlip(bottom, top, side, delay) {
         bottom = bottom.fn?bottom:$(bottom)
         top = top.fn?top:$(top)
+        delay = delay || 500
 
         // show pages in flipper
 
@@ -246,7 +247,7 @@ var Flip = function(){
             top.parent().hide()
             _flipper.show()
 
-        },500)
+        },delay)
     }
 
     function endFlip(cancel, direction) {
@@ -282,10 +283,10 @@ var Flip = function(){
             $('#page1,#page6').parent().hide()
             $('.flip-page').hide()
             if(direction==-1) {
-                flipNext()
+                next()
             }
             else if(direction==1){
-                flipPrevious()
+                previous()
             }
 
         }
@@ -305,6 +306,34 @@ var Flip = function(){
     }
 
     function flipNext() {
+        startFlip('#page4','#page5','right', 1);
+        ease(
+            EasingFunctions.easeInOutQuad,
+            function (step) {
+                reformFlipper(null, null, -0.2*(1-step), -_w*2*step)
+            },
+            function() {
+                endFlip(false, -1)
+            }
+            ,600,15, 0
+        )
+    }
+
+    function flipPrevious() {
+        startFlip('#page3','#page2','left', 1);
+        ease(
+            EasingFunctions.easeInOutQuad,
+            function (step) {
+                reformFlipper(null, null, 0.2*(1-step), _w*2*step)
+            },
+            function() {
+                endFlip(false, 1)
+            }
+            ,600,15, 0
+        )
+    }
+
+    function next() {
         // rotate
         $('#page1').attr('id','page-1')
         $('#page2').attr('id','page0')
@@ -315,12 +344,15 @@ var Flip = function(){
         $('#page-1').attr('id','page5')
         $('#page0').attr('id','page6')
         _book.page+=2
+        _book.resetLoadCount()
+        _book.setLoadTriggerCounter(2)
         _book.loadSingle('#page5',_book.page+1, function(){loadFlipPage()})
         _book.loadSingle('#page6',_book.page+2)
 
+
     }
 
-    function flipPrevious() {
+    function previous() {
         // rotate
         $('#page6').attr('id','page8')
         $('#page5').attr('id','page7')
@@ -333,6 +365,8 @@ var Flip = function(){
         // load previous page
         //_book.previous()
         _book.page-=2
+        _book.resetLoadCount()
+        _book.setLoadTriggerCounter(2)
         _book.loadSingle('#page1',_book.page-3)
         _book.loadSingle('#page2',_book.page-2, function(){loadFlipPage()})
 
@@ -765,8 +799,8 @@ var Flip = function(){
         replace : replace,
         zoom : zoom,
         loadFlipPage : loadFlipPage,
-        next : flipNext,
-        previous : flipPrevious,
+        flipNext : flipNext,
+        flipPrevious : flipPrevious,
     }
     // iframe load function for event bubbling
     // 현재로서는 사용안함

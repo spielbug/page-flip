@@ -103,6 +103,7 @@ var Loader = function(epubPath, loaded) {
 
     }
 
+    // set global iframe event handler
     $('iframe').load(function(evt) {
 
         var body=this.contentDocument.body
@@ -132,12 +133,13 @@ var Loader = function(epubPath, loaded) {
         //$(this).show()
         $(this).addClass('loaded')
         _loadCount++;
-        //console.log('frames loaded',_loadCount)
+        // console.log('frames loaded',_loadCount)
         if(_loadCount==_loadTriggerCounter) {
-            //console.log('trggered at',_loadCount)
+            // console.log('trggered at',_loadCount)
             // process after page load
-            //_flip.make('#fb')
-            //$('#fb').show()
+            // _flip.make('#fb')
+            // $('#fb').show()
+
             $('.nav-float').show()
             if(_book.page==1) $('.nav-left').hide()
             if(_book.page==_book.totalPages) $('.nav-right').hide()
@@ -160,6 +162,9 @@ var Loader = function(epubPath, loaded) {
     })
 
     function go(page, callback) {
+        // make odd
+        if(page%2==0) page++
+
         _loadTrigger = callback
         _curPage=page
         var pages=[page-3,page-2,page-1,page,page+1,page+2]
@@ -226,31 +231,32 @@ var Loader = function(epubPath, loaded) {
             _holders[i].attr('src', fullPath+'?wmode=transparent')
             _holders[i].data('page',page)
 
-            /*
-
-             (function(i) {
-
-             $.ajax({
-             url: fullPath,
-             dataType: 'xml',
-             success: function (s) {
-             //console.log(s.children[0].innerHTML)
-             var iframe = $('#page'+(i+1))
-             iframe[0].contentDocument.children[0].innerHTML =
-             replace(s.children[0].innerHTML, 'epub/OEBPS/content/')
-             var w = $(iframe[0].contentDocument.body).width()
-             var h = $(iframe[0].contentDocument.body).height()
-             iframe.width(w)
-             iframe.height(h)
-
-             }
-             })
-
-             })(i)
-             */
 
         }
         ret.page = _curPage
+    }
+
+    function load2(i) {
+        // it uses ajax, not iframe src
+        (function(i) {
+
+            $.ajax({
+                url: fullPath,
+                dataType: 'xml',
+                success: function (s) {
+                    //console.log(s.children[0].innerHTML)
+                    var iframe = $('#page'+(i+1))
+                    iframe[0].contentDocument.children[0].innerHTML =
+                        replace(s.children[0].innerHTML, 'epub/OEBPS/content/')
+                    var w = $(iframe[0].contentDocument.body).width()
+                    var h = $(iframe[0].contentDocument.body).height()
+                    iframe.width(w)
+                    iframe.height(h)
+
+                }
+            })
+
+        })(i)
     }
 
     function loadSingle(holder, page, callback) {
