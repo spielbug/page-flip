@@ -9,11 +9,11 @@ var Loader = function(epubPath, loaded) {
     var metaPath = epubPath + 'META-INF/'
     var containerXML = metaPath + 'container.xml'
     var _loadCount=0;
-    var _loadTrigger=6;
+    var _loadTriggerCounter=6;
     var _w;
     var _h;
     var _callback;
-    var _trigger;
+    var _loadTrigger;
 
     var ret = {
         metaPath:metaPath,
@@ -25,9 +25,9 @@ var Loader = function(epubPath, loaded) {
         go : go,
         load : load,
         loadSingle : loadSingle,
-        setLoadTrigger : function(val) { _loadTrigger=val },
+        setLoadTriggerCounter : function(val) { _loadTriggerCounter=val },
         resetLoadCount : function(){_loadCount=0},
-        setTrigger : function(callback){_trigger=callback},
+        setTrigger : function(callback){_loadTrigger=callback},
         pageSize : function() { return {width:_w, height:_h} }
     }
 
@@ -133,10 +133,16 @@ var Loader = function(epubPath, loaded) {
         $(this).addClass('loaded')
         _loadCount++;
         //console.log('frames loaded',_loadCount)
-        if(_loadCount==_loadTrigger) {
+        if(_loadCount==_loadTriggerCounter) {
+            //console.log('trggered at',_loadCount)
+            // process after page load
             //_flip.make('#fb')
             //$('#fb').show()
-            if(_trigger) _trigger()
+            $('.nav-float').show()
+            if(_book.page==1) $('.nav-left').hide()
+            if(_book.page==_book.totalPages) $('.nav-right').hide()
+
+            if(_loadTrigger) _loadTrigger()
         }
         //console.log('callback',_callback)
         if(_callback) {
@@ -154,17 +160,20 @@ var Loader = function(epubPath, loaded) {
     })
 
     function go(page, callback) {
-        _loadCount = 0
-        _trigger = callback
+        _loadTrigger = callback
         _curPage=page
         var pages=[page-3,page-2,page-1,page,page+1,page+2]
+        _loadCount = 0
+        _loadTriggerCounter=6
         load(pages)
     }
 
     function start(callback) {
-        _trigger = callback
+        _loadTrigger = callback
         _curPage=1
         var pages=[-2,-1,0,1,2,3]
+        _loadCount = 0
+        _loadTriggerCounter=6
         load(pages)
     }
 
@@ -176,6 +185,8 @@ var Loader = function(epubPath, loaded) {
         for (var i=0; i<6; i++) {
             pages.push(i+_curPage-3)
         }
+        _loadCount = 0
+        _loadTriggerCounter = 2
         load(pages)
     }
 
@@ -187,6 +198,8 @@ var Loader = function(epubPath, loaded) {
         for (var i=0; i<6; i++) {
             pages.push(i+_curPage-3)
         }
+        _loadCount = 0
+        _loadTriggerCounter = 2
         load(pages)
     }
 

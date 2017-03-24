@@ -326,6 +326,9 @@
             height:80px;
             background:url('images/arrow_left.png');
         }
+        .nav-previous:hover {
+            background:url('images/arrow_left_press.png');
+        }
         .nav-separator {
             width:18px;
             height:3px;
@@ -337,15 +340,24 @@
             height:61px;
             background:url('images/arrow_first_left.png');
         }
+        .nav-first:hover {
+            background:url('images/arrow_first_left_press.png');
+        }
         .nav-next {
             width:40px;
             height:80px;
             background:url('images/arrow_right.png');
         }
+        .nav-next:hover {
+            background:url('images/arrow_right_press.png');
+        }
         .nav-last {
             width:40px;
             height:61px;
             background:url('images/arrow_last_right.png');
+        }
+        .nav-last:hover {
+            background:url('images/arrow_last_right_press.png');
         }
     </style>
 </head>
@@ -530,33 +542,26 @@
 
     // nav element events
     $('.nav-next').bind('click',function(){
-        $('.nav-next').css('background','url("images/arrow_right_press.png")')
         _book.next(function(){
             _flip.loadFlipPage()
-            $('.nav-next').css('background','url("images/arrow_right.png")')
         })
     })
     $('.nav-previous').bind('click',function(){
-        $('.nav-previous').css('background','url("images/arrow_left_press.png")')
         _book.previous(function(){
             _flip.loadFlipPage()
-            $('.nav-previous').css('background','url("images/arrow_left.png")')
         })
     })
     $('.nav-first').bind('click',function(){
-        $('.nav-first').css('background','url("images/arrow_first_left_press.png")')
         _book.go(1,function(){
             _flip.loadFlipPage()
-            $('.nav-first').css('background','url("images/arrow_first_left.png")')
         })
     })
     $('.nav-last').bind('click',function(){
-        $('.nav-last').css('background','url("images/arrow_last_right_press.png")')
         _book.go(_book.totalPages, function(){
             _flip.loadFlipPage()
-            $('.nav-last').css('background','url("images/arrow_last_right.png")')
         })
     })
+
     $('.ico-fullscreen').bind('click',function(ev) {
         ev.stopPropagation()
         var elem = $(document)
