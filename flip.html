@@ -221,6 +221,12 @@
         .ico-zoom:hover {
             background:url('images/bottomMenu_zoom_in_btn_02.png');
         }
+        .zoomed {
+            background:url('images/bottomMenu_zoom_out_btn_01.png');
+        }
+        .zoomed:hover {
+            background:url('images/bottomMenu_zoom_out_btn_02.png');
+        }
         .ico-history {
             background:url('images/bottomMenu_history_01.png');
         }
@@ -251,7 +257,6 @@
         .window-mode:hover {
             background:url('images/bottomMenu_windowScreen_btn_02.png')
         }
-
         .ico-print {
             background:url('images/bottomMenu_print_btn_01.png');
         }
@@ -359,6 +364,12 @@
         .nav-last:hover {
             background:url('images/arrow_last_right_press.png');
         }
+        .scroller {
+            position : absolute;
+            top : 0px;
+            left : 0px;
+            pointer-events : none;
+        }
     </style>
 </head>
 <body>
@@ -374,6 +385,7 @@
             <iframe class="page" id="page6">6</iframe>
         </div>
         <div class="ico-hide hand"></div>
+        <div class="scroller"></div>
     </div>
     <div class="pagination-pane">
         <div class="pagination-progress"></div>
@@ -585,6 +597,21 @@
             $('.ico-fullscreen').addClass('window-mode')
         }
     })
+
+    $('.ico-zoom').bind('click',function(ev) {
+        ev.stopPropagation()
+        if(_flip.zoomStep()==1) {
+            $('.ico-zoom').addClass('zoomed')
+            _flip.zoom(_flip.zoom()*2)
+            _flip.zoomStep(2)
+        }
+        else {
+            $('.ico-zoom').removeClass('zoomed')
+            _flip.zoomStep(1)
+            $(window).trigger('resize')
+        }
+    })
+
 </script>
 
 </body>

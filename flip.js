@@ -13,7 +13,8 @@ var Flip = function(){
     var _edgeSize
     var _clickedEdge
     var _easing
-    var _zoom=1
+    var _zoom=1 // content zoom
+    var _zoomStep=1 // ui zoom step (1,2)
     var _timerID
 
     // make each side (left, right) holder and call makeFlipper
@@ -29,6 +30,9 @@ var Flip = function(){
         container.width(_w*2)
         container.height(_h)
 
+        // resize scroller
+        $('.scroller').width(_w)
+        $('.scroller').height(_h)
 
         // make edge (to receive event)
         var edgeLeft = makeDiv(_w*_edge,_h,'edge-left')
@@ -310,12 +314,12 @@ var Flip = function(){
         ease(
             EasingFunctions.easeInOutQuad,
             function (step) {
-                reformFlipper(null, null, -0.2*(1-step), -_w*2*step)
+                reformFlipper(null, null, -0.1*(1-step), -_w*2*step)
             },
             function() {
                 endFlip(false, -1)
             }
-            ,600,15, 0
+            ,300,15, 0
         )
     }
 
@@ -324,12 +328,12 @@ var Flip = function(){
         ease(
             EasingFunctions.easeInOutQuad,
             function (step) {
-                reformFlipper(null, null, 0.2*(1-step), _w*2*step)
+                reformFlipper(null, null, 0.1*(1-step), _w*2*step)
             },
             function() {
                 endFlip(false, 1)
             }
-            ,600,15, 0
+            ,300,15, 0
         )
     }
 
@@ -680,10 +684,10 @@ var Flip = function(){
             _edgeAngle = 45
             _edgeSize = _w * _edge / 1.414
             startFlip('#page3', '#page2', 'left')
-            console.log(_book.page)
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
+            console.log('left bottom')
             if(_edgeShown) return
             if(_book.page<=1) return true
             _edgeShown = true
@@ -693,6 +697,7 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
+            console.log('right top')
             if(_edgeShown) return
             if(_book.page>=_book.totalPages) return true
             _edgeShown = true
@@ -702,6 +707,7 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_container) - _w * _edge, o.top + zHeight(_container) - _w * _edge, _w * _edge, _w * _edge)) {
+            console.log('right bottom')
             if(_edgeShown) return
             if(_book.page>=_book.totalPages) return true
             _edgeShown = true
@@ -777,6 +783,7 @@ var Flip = function(){
         // })
         // _w *= zx
         // _h *= zy
+        if(_zoomStep>1) return
 
         z-=0.06
         _zoom = z
@@ -789,6 +796,30 @@ var Flip = function(){
         })
     }
 
+    function handleIframeMouseMove(delta) {
+        console.log(delta.x,delta.y)
+        var pos = $('#fb').position()
+        $('#fb').css({
+            'left':pos.left + delta.x * _zoom,
+            'top':pos.top + delta.y * _zoom,
+        })
+    }
+
+    function zoomStep(step){
+        if(step) {
+            _zoomStep=step
+            if(step>1) {
+                // enable iframe scroll
+                $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=true})
+            }
+            else {
+                // disable iframe scroll
+                $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=false})
+            }
+        }
+        else return _zoomStep
+    }
+
     return {
         make : make,
         startFlip : startFlip,
@@ -797,10 +828,12 @@ var Flip = function(){
         ease : ease,
         made : made,
         replace : replace,
-        zoom : zoom,
         loadFlipPage : loadFlipPage,
         flipNext : flipNext,
         flipPrevious : flipPrevious,
+        handleIframeMouseMove : handleIframeMouseMove,
+        zoom: function(scale){ if(scale) zoom(scale); else return _zoom},
+        zoomStep: zoomStep
     }
     // iframe load function for event bubbling
     // 현재로서는 사용안함

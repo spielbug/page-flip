@@ -130,7 +130,38 @@ var Loader = function(epubPath, loaded) {
             p.text(_book.title)
             //$(this).removeClass('empty')
         }
-        //$(this).show()
+
+        // add event listener
+        var f=this
+        var w=this.contentWindow
+        w._mouseEvent = undefined;
+
+        this.contentDocument.addEventListener('mousedown',function(ev){
+            if(!w.scrollEnabled) return
+            ev.preventDefault()
+            var p = $('#fb').position()
+            w._mouseEvent = {x:ev.pageX+p.left,
+                y:ev.pageY+p.top}
+        })
+        this.contentDocument.addEventListener('mousemove',function(ev){
+            if(!w.scrollEnabled) return
+            ev.preventDefault()
+            if(w._mouseEvent) {
+                var p = $('#fb').position()
+                var dx = ev.pageX+p.left-w._mouseEvent.x
+                var dy = ev.pageY+p.top-w._mouseEvent.y
+                w._mouseEvent = {x:ev.pageX+p.left,
+                    y:ev.pageY+p.top}
+                _flip.handleIframeMouseMove({x:dx, y:dy})
+            }
+        })
+        this.contentDocument.addEventListener('mouseup',function(ev){
+            if(!w.scrollEnabled) return
+            ev.preventDefault()
+            w._mouseEvent = undefined
+        })
+
+        // post page load
         $(this).addClass('loaded')
         _loadCount++;
         // console.log('frames loaded',_loadCount)
