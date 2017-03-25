@@ -466,6 +466,15 @@
         return rad*180/Math.PI
     }
 
+    function urlParam(name){
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results==null){
+            return null;
+        }
+        else{
+            return results[1] || 0;
+        }
+    }
     /*
      EasingFunctions is extracted from open source bezier easing
      https://github.com/gre/bezier-easing
@@ -492,8 +501,9 @@
     _book = Loader('epub/', function loaded(){
         console.log('manifest loaded')
 
+        var page = parseInt(urlParam('page')) || 1
         _book.registerHolders(['#page1','#page2','#page3','#page4','#page5','#page6'])
-        _book.start(function(){
+        _book.start(page,function(){
             $('.title-box').text(_book.title)
             $('.nav-total').text(' / '+_book.totalPages)
             _flip.make('#fb')

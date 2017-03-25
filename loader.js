@@ -204,10 +204,11 @@ var Loader = function(epubPath, loaded) {
         load(pages)
     }
 
-    function start(callback) {
+    function start(page, callback) {
         _loadTrigger = callback
-        _curPage=1
-        var pages=[-2,-1,0,1,2,3]
+        if(page%2==0) page++
+        _curPage=page
+        var pages=[page-3,page-2,page-1,page,page+1,page+2]
         _loadCount = 0
         _loadTriggerCounter=6
         load(pages)
