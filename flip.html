@@ -521,6 +521,7 @@
     })
 
     $(document).bind('mousemove', function(ev){
+        // event for slider
         if(_paginationEvent) {
             ev.preventDefault()
             ev.stopPropagation()
@@ -548,6 +549,10 @@
                 _paginationEvent.startPosition=ev.pageX
             }
         }
+        // remove iframe mouse down data, because this document received event
+        // that means it exited it's area
+        $('iframe').each(function(a,b){b.contentWindow._mouseEvent=undefined})
+
     })
 
     $(document).bind('mouseup', function(ev){
