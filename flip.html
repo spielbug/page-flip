@@ -9,6 +9,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="height = device-height,width = device-width,initial-scale = 1.0,minimum-scale = 1.0,maximum-scale = 1.0,user-scalable = no,target-densitydpi = device-dpi" />
     <title>page-flip</title>
     <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/common.css">-->
     <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/page.css">-->
@@ -81,12 +83,6 @@
         .flipper {
             /*border:1px black solid;*/
             cursor : pointer;
-        }
-        .flip-top-left {
-            background:white;
-        }
-        .flip-top-right {
-            background:white;
         }
         /* pagination element */
         .pagination-pane {
@@ -517,7 +513,6 @@
 
     _book = Loader('epub/', function loaded(){
         console.log('manifest loaded')
-
         var page = parseInt(urlParam('page')) || 1
         _book.registerHolders(['#page1','#page2','#page3','#page4','#page5','#page6'])
         _book.start(page,function(){
@@ -532,6 +527,7 @@
 
     // pagination event
     var _paginationEvent = undefined
+
     // event handler
     $('.pagination-cursor').bind('mousedown',function(ev){
         _paginationEvent = {}
@@ -578,6 +574,7 @@
             _paginationEvent = undefined
         }
     })
+
 
     // nav element events
     $('.nav-next').bind('click',function(){
@@ -654,6 +651,8 @@
             $('.ico-fullscreen').addClass('window-mode')
         }
     })
+
+
 
 
 </script>

@@ -164,24 +164,21 @@ var Flip = function(){
         })
         container.append(_flipper)
 
-        var fbr = makeDiv(_w, _h, 'flip-bottom-right', 'flip-bottom-right')
+        var fbr = makeDiv(_w, _h, 'flip-bottom-right', 'flip-bottom-right flip-page')
         var wrapper = makeWrapper(fbr)
-        var fbl = makeDiv(_w, _h, 'flip-bottom-left', 'flip-bottom-left')
+        var fbl = makeDiv(_w, _h, 'flip-bottom-left', 'flip-bottom-left flip-page')
         wrapper.prepend(fbl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
-        var ftr = makeDiv(_w, _h, 'flip-top-right','flip-top-right')
+        var ftr = makeDiv(_w, _h, 'flip-top-right','flip-top-right flip-page')
         wrapper = makeWrapper(ftr)
-        var ftl = makeDiv(_w, _h, 'flip-top-left','flip-top-left')
+        var ftl = makeDiv(_w, _h, 'flip-top-left','flip-top-left flip-page')
         wrapper.prepend(ftl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
-        fbr.addClass('flip-page').css('position','absolute')
-        fbl.addClass('flip-page').css('position','absolute')
-        ftr.addClass('flip-page').css('position','absolute')
-        ftl.addClass('flip-page').css('position','absolute')
+        $('.flip-page').css('position','absolute')
 
     }
 
@@ -189,7 +186,11 @@ var Flip = function(){
         $(target).attr('src',src.attr('src'))
         if(src[0].contentDocument.head==null||src[0].contentDocument.body==null) return ''
         src.data('stat','loading')
-        return src[0].contentDocument.head.innerHTML+src[0].contentDocument.body.innerHTML
+        var head = src[0].contentDocument.head
+        $(head).find('meta').remove()
+        $(head).find('title').remove()
+        var body = src[0].contentDocument.body
+        return head.innerHTML+body.innerHTML
             +"<script>$('"+target+"').addClass('loaded')</script>"
     }
     function blankHtml(src, target) {
@@ -823,11 +824,27 @@ var Flip = function(){
         return true
     }
 
+    $(document).bind('touchstart', function(){
+        ev.preventDefault()
+        ev.stopPropagation()
+    })
+    $(document).bind('touchmove', function(){
+        ev.preventDefault()
+        ev.stopPropagation()
+    })
+    $(document).bind('touchend', function(){
+        ev.preventDefault()
+        ev.stopPropagation()
+    })
+
+
     $(window).resize(function() {
         var hr = $('body').width()/_flipBook.width()
             vr = $('body').height()/_flipBook.height()
         fitScale(Math.min(hr,vr))
     })
+
+
 
     function zWidth(s) {
         s=(s.fn)?s:$(s)
