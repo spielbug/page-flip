@@ -598,14 +598,13 @@
     })
     $('.ico-zoom').bind('click',function(ev) {
         ev.stopPropagation()
-        if(_flip.zoomStep()==1) {
+        if(_flip.zoom()==1) {
             $('.ico-zoom').addClass('zoomed')
-            _flip.zoom(_flip.zoom()*2)
-            _flip.zoomStep(2)
+            _flip.zoom(2)
         }
         else {
             $('.ico-zoom').removeClass('zoomed')
-            _flip.zoomStep(1)
+            _flip.zoom(1)
             $(window).trigger('resize')
         }
     })

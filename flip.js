@@ -487,8 +487,8 @@ var Flip = function(){
         }
 
         _flipper.css({
-            'left':(fPos.left/_fit-(rs.w-_w)/2),
-            'top':(fPos.top/_fit-(rs.h-_h)/2)
+            'left':(fPos.left/(_fit*_zoom)-(rs.w-_w)/2),
+            'top':(fPos.top/(_fit*_zoom)-(rs.h-_h)/2)
         })
 
         _flipper.width(rs.w)
@@ -667,8 +667,8 @@ var Flip = function(){
         ev.preventDefault()
         ev.stopPropagation()
 
-        var dx = (ev.pageX-_startPoint.x)/_fit*1.5
-        var dy = (ev.pageY-_startPoint.y)/_fit*1.5
+        var dx = (ev.pageX-_startPoint.x)/(_fit*_zoom)*1.5
+        var dy = (ev.pageY-_startPoint.y)/(_fit*_zoom)*1.5
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
         var cancel = (distance/_w<0.4)
@@ -788,8 +788,8 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if(_startPoint) {
-            var dx = (ev.pageX-_startPoint.x)/_fit*1.5
-            var dy = (ev.pageY-_startPoint.y)/_fit*1.5
+            var dx = (ev.pageX-_startPoint.x)/(_fit*_zoom)*1.5
+            var dy = (ev.pageY-_startPoint.y)/(_fit*_zoom)*1.5
             var angle = Math.atan2(dy, dx)
             var distance = Math.sqrt(dx*dx + dy*dy)/2
             if(dx==0) return;
@@ -826,28 +826,28 @@ var Flip = function(){
     $(window).resize(function() {
         var hr = $('body').width()/_flipBook.width()
             vr = $('body').height()/_flipBook.height()
-        fitSacle(Math.min(hr,vr))
+        fitScale(Math.min(hr,vr))
     })
 
     function zWidth(s) {
         s=(s.fn)?s:$(s)
-        return s.width()*_fit
+        return s.width()*_fit*_zoom
     }
 
     function zHeight(s) {
         s=(s.fn)?s:$(s)
-        return s.height()*_fit
+        return s.height()*_fit*_zoom
     }
 
     function _w() {
-        return _w * _fit
+        return _w * _fit*_zoom
     }
 
     function _h() {
-        return _h * _fit
+        return _h * _fit*_zoom
     }
 
-    function fitSacle(z) {
+    function fitScale(fit) {
         // _container.css({
         //     'transform':'scale('+zx+','+zy+')',
         //     'transform-origin':'0px 0px'
@@ -856,8 +856,8 @@ var Flip = function(){
         // _h *= zy
         if(_zoom>1) return
 
-        z-=0.06
-        _fit = z
+        fit-=0.06
+        _fit = fit
 
         transformFlipBook()
     }
@@ -866,12 +866,12 @@ var Flip = function(){
         //console.log(delta.x,delta.y)
         var pos = $('#fb').position()
         $('#fb').css({
-            'left':pos.left + delta.x * _fit,
-            'top':pos.top + delta.y * _fit,
+            'left':pos.left + delta.x * _fit*_zoom,
+            'top':pos.top + delta.y * _fit*_zoom,
         })
     }
 
-    function zoomStep(step){
+    function zoom(step){
         if(step) {
             _zoom=step
             if(step>1) {
@@ -882,16 +882,17 @@ var Flip = function(){
                 // disable iframe scroll
                 $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=false})
             }
+            transformFlipBook()
         }
         else return _zoom
     }
 
     function transformFlipBook() {
         _flipBook.css({
-            'transform':'scale('+_fit+')',
+            'transform':'scale('+(_fit*_zoom)+')',
             'transform-origin':'0px 0px',
-            'left':(_flipBook.parent().width()-_flipBook.width()*_fit)/2,
-            'top':(_flipBook.parent().height()-_flipBook.height()*_fit)/2,
+            'left':(_flipBook.parent().width()-_flipBook.width()*_fit*_zoom)/2,
+            'top':(_flipBook.parent().height()-_flipBook.height()*_fit*_zoom)/2,
         })
     }
 
@@ -935,8 +936,8 @@ var Flip = function(){
         flipNext : flipNext,
         flipPrevious : flipPrevious,
         handleIframeMouseMove : handleIframeMouseMove,
-        zoom: function(scale){ if(scale) fitSacle(scale); else return _fit},
-        zoomStep: zoomStep,
+        fit: function(scale){ if(scale) fitScale(scale); else return _fit},
+        zoom: zoom,
         viewSides : viewSides
 
     }
