@@ -248,6 +248,12 @@
         .ico-view-mode:hover {
             background:url('images/bottomMenu_pageMode_Single_02.png');
         }
+        .view-mode-double {
+            background:url('images/bottomMenu_pageMode_Double_01.png');
+        }
+        .view-mode-double:hover {
+            background:url('images/bottomMenu_pageMode_Double_02.png');
+        }
         .ico-thumbnail {
             background:url('images/bottomMenu_thumbnail_01.png');
         }
@@ -373,12 +379,14 @@
         .nav-last:hover {
             background:url('images/arrow_last_right_press.png');
         }
+/*
         .scroller {
             position : absolute;
             top : 0px;
             left : 0px;
             pointer-events : none;
         }
+*/
     </style>
 </head>
 <body>
@@ -394,7 +402,7 @@
             <iframe class="page" id="page6">6</iframe>
         </div>
         <div class="ico-hide hand"></div>
-        <div class="scroller"></div>
+        <!--<div class="scroller"></div>-->
     </div>
     <div class="pagination-pane">
         <div class="pagination-progress"></div>
@@ -588,6 +596,20 @@
             _flip.loadFlipPage()
         })
     })
+    $('.ico-zoom').bind('click',function(ev) {
+        ev.stopPropagation()
+        if(_flip.zoomStep()==1) {
+            $('.ico-zoom').addClass('zoomed')
+            _flip.zoom(_flip.zoom()*2)
+            _flip.zoomStep(2)
+        }
+        else {
+            $('.ico-zoom').removeClass('zoomed')
+            _flip.zoomStep(1)
+            $(window).trigger('resize')
+        }
+    })
+
     $('.nav-value').bind('click',function() {
         $(this).select()
     })
@@ -608,6 +630,18 @@
         }
     })
 
+    $('.ico-view-mode').bind('click',function(ev) {
+        ev.stopPropagation()
+        if(_flip.viewSides()==2) {
+            _flip.viewSides(1)
+            $('.ico-view-mode').addClass('view-mode-double')
+        }
+        else {
+            _flip.viewSides(2)
+            $('.ico-view-mode').removeClass('view-mode-double')
+        }
+    })
+
     $('.ico-fullscreen').bind('click',function(ev) {
         ev.stopPropagation()
         var elem = $(document)
@@ -622,19 +656,6 @@
         }
     })
 
-    $('.ico-zoom').bind('click',function(ev) {
-        ev.stopPropagation()
-        if(_flip.zoomStep()==1) {
-            $('.ico-zoom').addClass('zoomed')
-            _flip.zoom(_flip.zoom()*2)
-            _flip.zoomStep(2)
-        }
-        else {
-            $('.ico-zoom').removeClass('zoomed')
-            _flip.zoomStep(1)
-            $(window).trigger('resize')
-        }
-    })
 
 </script>
 

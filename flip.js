@@ -15,8 +15,8 @@ var Flip = function(){
     var _edgeSize
     var _clickedEdge
     var _easing
-    var _zoom=1 // content zoom
-    var _zoomStep=1 // ui zoom step (1,2)
+    var _fit=1 // content zoom
+    var _zoom=1 // ui zoom step (1,2)
     var _timerID
     var _viewSides=2 // double or single
 
@@ -34,8 +34,10 @@ var Flip = function(){
         flipBook.height(_h)
 
         // resize scroller
+/*
         $('.scroller').width(_w)
         $('.scroller').height(_h)
+*/
 
         // make edge (to receive event)
         var edgeLeft = makeDiv(_w*_edge,_h,'','edge-left')
@@ -44,7 +46,7 @@ var Flip = function(){
             left:'0px',
             top:'0px',
         })
-        var edgeRight = makeDiv(_w*_edge,_h,'','edge-left')
+        var edgeRight = makeDiv(_w*_edge,_h,'','edge-right')
         edgeRight.css ({
             position:'absolute',
             left:(_w*(_viewSides-_edge))+'px',
@@ -190,11 +192,9 @@ var Flip = function(){
         return src[0].contentDocument.head.innerHTML+src[0].contentDocument.body.innerHTML
             +"<script>$('"+target+"').addClass('loaded')</script>"
     }
-    function blankHtml(target) {
-        $(target).attr('src','blank')
+    function blankHtml(src, target) {
         $(target).addClass('loaded')
-        return
-            "<div style='width:100%;height:100%;background:white;'>BLANK</body></html>"
+        return "<div style='width:100%;height:100%;background:white;'></div>"
     }
     function loadFlipPage() {
         if(_viewSides==1) loadFlipPage1()
@@ -225,15 +225,17 @@ var Flip = function(){
             getFrameHtml($('#page4'),'.flip-bottom-left'),
             PATH_PREFIX)
         )
-        $('.flip-top-left').html(
-            blankHtml('.flip-top-left')
+        $('.flip-top-left').html(replace(
+            blankHtml($('#page4'),'.flip-top-left'),
+            PATH_PREFIX)
         )
         $('.flip-bottom-right').html(replace(
             getFrameHtml($('#page4'),'.flip-bottom-right'),
             PATH_PREFIX)
         )
-        $('.flip-top-right').html(
-            blankHtml('.flip-top-right')
+        $('.flip-top-right').html(replace(
+            blankHtml($('#page4'),'.flip-top-right'),
+            PATH_PREFIX)
         )
     }
 
@@ -485,8 +487,8 @@ var Flip = function(){
         }
 
         _flipper.css({
-            'left':(fPos.left/_zoom-(rs.w-_w)/2),
-            'top':(fPos.top/_zoom-(rs.h-_h)/2)
+            'left':(fPos.left/_fit-(rs.w-_w)/2),
+            'top':(fPos.top/_fit-(rs.h-_h)/2)
         })
 
         _flipper.width(rs.w)
@@ -665,8 +667,8 @@ var Flip = function(){
         ev.preventDefault()
         ev.stopPropagation()
 
-        var dx = (ev.pageX-_startPoint.x)/_zoom*1.5
-        var dy = (ev.pageY-_startPoint.y)/_zoom*1.5
+        var dx = (ev.pageX-_startPoint.x)/_fit*1.5
+        var dy = (ev.pageY-_startPoint.y)/_fit*1.5
         var angle = Math.atan2(dy, dx)
         var distance = Math.sqrt(dx*dx + dy*dy)/2
         var cancel = (distance/_w<0.4)
@@ -741,9 +743,10 @@ var Flip = function(){
 
         //console.log(x,y,o)
         //console.log(_book.page)
+        // console.log(x, x+o.left, zWidth(_flipBook))
 
         if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
-            console.log('left top')
+            // console.log('left top')
             if(_edgeShown) return
             if(_book.page<=1) return true // true means don't retry
             _edgeShown = true
@@ -754,7 +757,7 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left, o.top + zHeight(_flipBook) - _w * _edge, _w * _edge, _w * _edge)) {
-            console.log('left bottom')
+            // console.log('left bottom')
             if(_edgeShown) return
             if(_book.page<=1) return true
             _edgeShown = true
@@ -765,7 +768,7 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_flipBook) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
-            console.log('right top')
+            // console.log('right top')
             if(_edgeShown) return
             if(_book.page>=_book.totalPages) return true
             _edgeShown = true
@@ -775,7 +778,7 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_flipBook) - _w * _edge, o.top + zHeight(_flipBook) - _w * _edge, _w * _edge, _w * _edge)) {
-            console.log('right bottom')
+            // console.log('right bottom')
             if(_edgeShown) return
             if(_book.page>=_book.totalPages) return true
             _edgeShown = true
@@ -785,8 +788,8 @@ var Flip = function(){
             easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
         }
         else if(_startPoint) {
-            var dx = (ev.pageX-_startPoint.x)/_zoom*1.5
-            var dy = (ev.pageY-_startPoint.y)/_zoom*1.5
+            var dx = (ev.pageX-_startPoint.x)/_fit*1.5
+            var dy = (ev.pageY-_startPoint.y)/_fit*1.5
             var angle = Math.atan2(dy, dx)
             var distance = Math.sqrt(dx*dx + dy*dy)/2
             if(dx==0) return;
@@ -823,59 +826,54 @@ var Flip = function(){
     $(window).resize(function() {
         var hr = $('body').width()/_flipBook.width()
             vr = $('body').height()/_flipBook.height()
-        zoom(Math.min(hr,vr))
+        fitSacle(Math.min(hr,vr))
     })
 
     function zWidth(s) {
         s=(s.fn)?s:$(s)
-        return s.width()*_zoom
+        return s.width()*_fit
     }
 
     function zHeight(s) {
         s=(s.fn)?s:$(s)
-        return s.height()*_zoom
+        return s.height()*_fit
     }
 
     function _w() {
-        return _w * _zoom
+        return _w * _fit
     }
 
     function _h() {
-        return _h * _zoom
+        return _h * _fit
     }
 
-    function zoom(z) {
+    function fitSacle(z) {
         // _container.css({
         //     'transform':'scale('+zx+','+zy+')',
         //     'transform-origin':'0px 0px'
         // })
         // _w *= zx
         // _h *= zy
-        if(_zoomStep>1) return
+        if(_zoom>1) return
 
         z-=0.06
-        _zoom = z
+        _fit = z
 
-        _flipBook.css({
-            'transform':'scale('+z+')',
-            'transform-origin':'0px 0px',
-            'left':(_flipBook.parent().width()-_flipBook.width()*_zoom)/2,
-            'top':(_flipBook.parent().height()-_flipBook.height()*_zoom)/2,
-        })
+        transformFlipBook()
     }
 
     function handleIframeMouseMove(delta) {
-        console.log(delta.x,delta.y)
+        //console.log(delta.x,delta.y)
         var pos = $('#fb').position()
         $('#fb').css({
-            'left':pos.left + delta.x * _zoom,
-            'top':pos.top + delta.y * _zoom,
+            'left':pos.left + delta.x * _fit,
+            'top':pos.top + delta.y * _fit,
         })
     }
 
     function zoomStep(step){
         if(step) {
-            _zoomStep=step
+            _zoom=step
             if(step>1) {
                 // enable iframe scroll
                 $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=true})
@@ -885,7 +883,44 @@ var Flip = function(){
                 $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=false})
             }
         }
-        else return _zoomStep
+        else return _zoom
+    }
+
+    function transformFlipBook() {
+        _flipBook.css({
+            'transform':'scale('+_fit+')',
+            'transform-origin':'0px 0px',
+            'left':(_flipBook.parent().width()-_flipBook.width()*_fit)/2,
+            'top':(_flipBook.parent().height()-_flipBook.height()*_fit)/2,
+        })
+    }
+
+    function viewSides(s) {
+        if(!s) return _viewSides
+        if(_viewSides==s) return
+
+        _viewSides=s
+        $('#page4,#page5,#page6').parent().css({
+            'left' : _w * (_viewSides-1) // for double view mode, left will be _w, or 0
+        })
+        $('#fb').css ({
+            width: _w * _viewSides
+        })
+        $('.edge-right').css ({
+            left:(_w*(_viewSides-_edge))+'px',
+        })
+        transformFlipBook()
+
+        if(_viewSides==2) {
+            loadFlipPage2()
+            $('#fb').removeClass('fb-single')
+            $('#page3').parent().show()
+        }
+        else  {
+            loadFlipPage1()
+            $('#fb').addClass('fb-single')
+            $('#page3').parent().hide()
+        }
     }
 
     return {
@@ -900,8 +935,10 @@ var Flip = function(){
         flipNext : flipNext,
         flipPrevious : flipPrevious,
         handleIframeMouseMove : handleIframeMouseMove,
-        zoom: function(scale){ if(scale) zoom(scale); else return _zoom},
-        zoomStep: zoomStep
+        zoom: function(scale){ if(scale) fitSacle(scale); else return _fit},
+        zoomStep: zoomStep,
+        viewSides : viewSides
+
     }
     // iframe load function for event bubbling
     // 현재로서는 사용안함

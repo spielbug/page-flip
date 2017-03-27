@@ -194,7 +194,7 @@ var Loader = function(epubPath, loaded) {
 
     function go(page, callback) {
         // make odd
-        if(page%2==0) page++
+        if(_flip.viewSides==2 && page%2==0) page++
 
         _loadTrigger = callback
         _curPage=page
@@ -205,8 +205,9 @@ var Loader = function(epubPath, loaded) {
     }
 
     function start(page, callback) {
+        if(_flip.viewSides==2 && page%2==0) page++
+
         _loadTrigger = callback
-        if(page%2==0) page++
         _curPage=page
         var pages=[page-3,page-2,page-1,page,page+1,page+2]
         _loadCount = 0
