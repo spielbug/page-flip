@@ -42,7 +42,11 @@
             /*transform-origin:0px 0px;*/
             /*box-shadow: 10px 15px 10px rgba(0,0,0,0.5);*/
         }
-        #edge-left,#edge-right {
+        .fb-single {
+            overflow:hidden;
+        }
+
+        .edge-left,.edge-right {
             /*background:rgba(0,0,0,0.05);*/
         }
         /*
@@ -77,6 +81,12 @@
         .flipper {
             /*border:1px black solid;*/
             cursor : pointer;
+        }
+        .flip-top-left {
+            background:white;
+        }
+        .flip-top-right {
+            background:white;
         }
         /* pagination element */
         .pagination-pane {
@@ -163,7 +173,6 @@
             height:43px;
             text-align: center;
         }
-
         .tool-box {
             position : relative;
             margin-left:auto;
