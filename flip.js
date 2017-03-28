@@ -869,22 +869,33 @@ var Flip = function(){
     function handleIframeTouchMove(ev) {
         if(ev.touches.length==2) {
             // pinch
-            if(!_toucheEvent) _toucheEvent={touches:ev.touches}
+            if(!_toucheEvent) {
+                _toucheEvent={
+                    touches:{
+                        x1:ev.touches[0].screenX,
+                        y1:ev.touches[0].screenY,
+                        x2:ev.touches[1].screenX,
+                        y2:ev.touches[1].screenY,
+                    } ,
+                    zoom:_zoom
+                }
+            }
             else {
                 var oldDistance = Math.sqrt(
-                    Math.pow(_toucheEvent.touches[0].screenX-_toucheEvent.touches[1].screenX,2)
-                    +Math.pow(_toucheEvent.touches[0].screenY-_toucheEvent.touches[1].screenY,2)
+                    Math.pow(_toucheEvent.touches.x1-_toucheEvent.touches.x2,2)
+                    +Math.pow(_toucheEvent.touches.y1-_toucheEvent.touches.y2,2)
                 )
                 var newDistance = Math.sqrt(
                     Math.pow(ev.touches[0].screenX-ev.touches[1].screenX,2)
                     +Math.pow(ev.touches[0].screenY-ev.touches[1].screenY,2)
                 )
-                var newZoom = 1+(newDistance - oldDistance)/Math.max(window.innerHeight , window.innerWidth)
+                var newZoom = _toucheEvent.zoom+10*(newDistance - oldDistance)/Math.max(window.innerHeight , window.innerWidth)
+                // $('.title-box').text(''+(newDistance-oldDistance))
                 if(newZoom>5) newZoom=5
                 if(newZoom<1.1) newZoom=1
+
                 zoom(newZoom)
 
-                // $('.title-box').text(zoom)
             }
         }
     }

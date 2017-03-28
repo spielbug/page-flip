@@ -167,7 +167,7 @@ var Loader = function(epubPath, loaded) {
             if(!w.scrollEnabled) return
             var touches = ev.touches
             if(touches.length==1) {
-                ev.preventDefault()
+                // ev.preventDefault()
                 ev = ev.touches[0]
                 //var p = $('#fb').position()
                 w._mouseEvent = {x:ev.screenX,
@@ -191,7 +191,7 @@ var Loader = function(epubPath, loaded) {
         })
         this.contentDocument.addEventListener('touchend',function(ev){
             //if(!w.scrollEnabled) return
-            ev.preventDefault()
+            // ev.preventDefault()
             w._mouseEvent = undefined
             _flip.handleIframeTouchEnd(ev)
         })
