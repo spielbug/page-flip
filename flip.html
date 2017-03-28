@@ -9,7 +9,7 @@
 <html lang="en">
 <head>
         <meta name="viewport"
-              content="height = device-height,width = device-width,initial-scale = 1,minimum-scale = 1.0,maximum-scale = 6.0,user-scalable = yes,target-densitydpi = device-dpi" />
+              content="height = device-height,width = device-width,initial-scale = 1,minimum-scale = 1.0,maximum-scale = 6.0,user-scalable = no,target-densitydpi = device-dpi" />
     <title>page-flip</title>
     <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/common.css">-->
     <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/page.css">-->
@@ -600,12 +600,14 @@
         ev.stopPropagation()
         if(_flip.zoom()==1) {
             $('.ico-zoom').addClass('zoomed')
-            _flip.zoom(2)
+            _flip.zoom(4)
+            _flip.iframeScrollEnabled(true)
         }
         else {
             $('.ico-zoom').removeClass('zoomed')
             _flip.zoom(1)
-            $(window).trigger('resize')
+            _flip.iframeScrollEnabled(false)
+            //$(window).trigger('resize')
         }
     })
 
@@ -655,9 +657,6 @@
         }
     })
 
-    $(document).bind('mousemove', function(ev) {
-        ev.preventDefault()
-    })
 </script>
 
 </body>

@@ -136,6 +136,7 @@ var Loader = function(epubPath, loaded) {
         var w=this.contentWindow
         w._mouseEvent = undefined;
 
+        ////// mouse
         this.contentDocument.addEventListener('mousedown',function(ev){
             if(!w.scrollEnabled) return
             ev.preventDefault()
@@ -161,40 +162,38 @@ var Loader = function(epubPath, loaded) {
             w._mouseEvent = undefined
         })
 
+        ///// touch
         this.contentDocument.addEventListener('touchstart',function(ev) {
             if(!w.scrollEnabled) return
             var touches = ev.touches
             if(touches.length==1) {
                 ev.preventDefault()
                 ev = ev.touches[0]
-                var p = $('#fb').position()
-                w._mouseEvent = {x:ev.pageX+p.left,
-                    y:ev.pageY+p.top}
+                //var p = $('#fb').position()
+                w._mouseEvent = {x:ev.screenX,
+                    y:ev.screenY}
             }
         })
         this.contentDocument.addEventListener('touchmove',function(ev){
-            //if(!w.scrollEnabled) return
+            _flip.handleIframeTouchMove(ev)
+            if(!w.scrollEnabled) return
             ev.preventDefault()
-            ev.stopPropagation()
             var touches = ev.touches
             if(touches.length==1) {
                 ev = ev.touches[0]
-                // pan
                 var p = $('#fb').position()
-                var dx = ev.pageX+p.left-w._mouseEvent.x
-                var dy = ev.pageY+p.top-w._mouseEvent.y
-                w._mouseEvent = {x:ev.pageX+p.left,
-                    y:ev.pageY+p.top}
+                var dx = ev.screenX-w._mouseEvent.x
+                var dy = ev.screenY-w._mouseEvent.y
+                w._mouseEvent = {x:ev.screenX,
+                    y:ev.screenY}
                 _flip.handleIframeMouseMove({x:dx, y:dy})
             }
-            else if(touches.length==2) {
-                // zoom
-            }
         })
-        this.contentDocument.addEventListener('mouseup',function(ev){
-            if(!w.scrollEnabled) return
+        this.contentDocument.addEventListener('touchend',function(ev){
+            //if(!w.scrollEnabled) return
             ev.preventDefault()
             w._mouseEvent = undefined
+            _flip.handleIframeTouchEnd(ev)
         })
 
             // post page load

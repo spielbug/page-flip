@@ -865,29 +865,55 @@ var Flip = function(){
         transformFlipBook()
     }
 
+    var _toucheEvent = undefined
+    function handleIframeTouchMove(ev) {
+        if(ev.touches.length==2) {
+            // pinch
+            if(!_toucheEvent) _toucheEvent={touches:ev.touches}
+            else {
+                var oldDistance = Math.sqrt(
+                    Math.pow(_toucheEvent.touches[0].screenX-_toucheEvent.touches[1].screenX,2)
+                    +Math.pow(_toucheEvent.touches[0].screenY-_toucheEvent.touches[1].screenY,2)
+                )
+                var newDistance = Math.sqrt(
+                    Math.pow(ev.touches[0].screenX-ev.touches[1].screenX,2)
+                    +Math.pow(ev.touches[0].screenY-ev.touches[1].screenY,2)
+                )
+                var newZoom = 1+(newDistance - oldDistance)/Math.max(window.innerHeight , window.innerWidth)
+                if(newZoom>5) newZoom=5
+                if(newZoom<1.1) newZoom=1
+                zoom(newZoom)
+
+                // $('.title-box').text(zoom)
+            }
+        }
+    }
+    function handleIframeTouchEnd(ev) {
+        _toucheEvent=undefined
+        // $('.title-box').text('touch end')
+        if(_zoom>1) iframeScrollEnabled(true)
+        else iframeScrollEnabled(false)
+    }
     function handleIframeMouseMove(delta) {
         //console.log(delta.x,delta.y)
+        if(_toucheEvent) return
         var pos = $('#fb').position()
         $('#fb').css({
-            'left':pos.left + delta.x * _fit*_zoom,
-            'top':pos.top + delta.y * _fit*_zoom,
+            'left':pos.left + delta.x,
+            'top':pos.top + delta.y,
         })
     }
 
     function zoom(step){
         if(step) {
             _zoom=step
-            if(step>1) {
-                // enable iframe scroll
-                $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=true})
-            }
-            else {
-                // disable iframe scroll
-                $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=false})
-            }
             transformFlipBook()
         }
         else return _zoom
+    }
+
+    function iframeScrollEnabled(bool) {
+        $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=bool})
     }
 
     function transformFlipBook() {
@@ -941,8 +967,10 @@ var Flip = function(){
         handleIframeMouseMove : handleIframeMouseMove,
         fit: function(scale){ if(scale) fitScale(scale); else return _fit},
         zoom: zoom,
-        viewSides : viewSides
-
+        viewSides : viewSides,
+        handleIframeTouchMove:handleIframeTouchMove,
+        handleIframeTouchEnd:handleIframeTouchEnd,
+        iframeScrollEnabled:iframeScrollEnabled,
     }
     // iframe load function for event bubbling
     // 현재로서는 사용안함
