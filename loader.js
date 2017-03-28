@@ -175,7 +175,7 @@ var Loader = function(epubPath, loaded) {
             }
         })
         this.contentDocument.addEventListener('touchmove',function(ev){
-            _flip.handleIframeTouchMove(ev)
+            _flip.handleIframeTouchMove(ev, f)
             if(!w.scrollEnabled) return
             ev.preventDefault()
             var touches = ev.touches

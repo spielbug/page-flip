@@ -866,7 +866,7 @@ var Flip = function(){
     }
 
     var _touchEvent = undefined
-    function handleIframeTouchMove(ev) {
+    function handleIframeTouchMove(ev, frame) {
         if(ev.touches.length==2) {
             // pinch
             if(!_touchEvent) {
