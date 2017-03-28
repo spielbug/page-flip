@@ -865,12 +865,12 @@ var Flip = function(){
         transformFlipBook()
     }
 
-    var _toucheEvent = undefined
+    var _touchEvent = undefined
     function handleIframeTouchMove(ev) {
         if(ev.touches.length==2) {
             // pinch
-            if(!_toucheEvent) {
-                _toucheEvent={
+            if(!_touchEvent) {
+                _touchEvent={
                     touches:{
                         x1:ev.touches[0].screenX,
                         y1:ev.touches[0].screenY,
@@ -882,14 +882,14 @@ var Flip = function(){
             }
             else {
                 var oldDistance = Math.sqrt(
-                    Math.pow(_toucheEvent.touches.x1-_toucheEvent.touches.x2,2)
-                    +Math.pow(_toucheEvent.touches.y1-_toucheEvent.touches.y2,2)
+                    Math.pow(_touchEvent.touches.x1-_touchEvent.touches.x2,2)
+                    +Math.pow(_touchEvent.touches.y1-_touchEvent.touches.y2,2)
                 )
                 var newDistance = Math.sqrt(
                     Math.pow(ev.touches[0].screenX-ev.touches[1].screenX,2)
                     +Math.pow(ev.touches[0].screenY-ev.touches[1].screenY,2)
                 )
-                var newZoom = _toucheEvent.zoom+10*(newDistance - oldDistance)/Math.max(window.innerHeight , window.innerWidth)
+                var newZoom = _touchEvent.zoom+10*(newDistance - oldDistance)/Math.max(window.innerHeight , window.innerWidth)
                 // $('.title-box').text(''+(newDistance-oldDistance))
                 if(newZoom>5) newZoom=5
                 if(newZoom<1.1) newZoom=1
@@ -901,14 +901,14 @@ var Flip = function(){
         ev.preventDefault()
     }
     function handleIframeTouchEnd(ev) {
-        _toucheEvent=undefined
+        _touchEvent=undefined
         // $('.title-box').text('touch end')
         if(_zoom>1) iframeScrollEnabled(true)
         else iframeScrollEnabled(false)
     }
     function handleIframeMouseMove(delta) {
         //console.log(delta.x,delta.y)
-        if(_toucheEvent) return
+        if(_touchEvent) return
         var pos = $('#fb').position()
         $('#fb').css({
             'left':pos.left + delta.x,
