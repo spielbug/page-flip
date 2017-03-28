@@ -899,8 +899,15 @@ var Flip = function(){
                 if(newZoom>5) newZoom=5
                 if(newZoom<1.1) newZoom=1
 
-                zoom(newZoom)
+                // zoom(newZoom)
 
+                _zoom = newZoom
+                _flipBook.css({
+                    'transform':'scale('+(_fit*_zoom)+')',
+                    'transform-origin':'0px 0px',
+                    'left':(_flipBook.parent().width()-(_flipBook.width()+x)*_fit*_zoom)/2,
+                    'top':(_flipBook.parent().height()-(_flipBook.height()+y)*_fit*_zoom)/2,
+                })
             }
         }
         ev.preventDefault()
