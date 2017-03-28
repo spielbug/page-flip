@@ -869,6 +869,11 @@ var Flip = function(){
     function handleIframeTouchMove(ev, frame) {
         if(ev.touches.length==2) {
             // pinch
+            var pos=$(frame).parent().position()
+            var x=(pos.left/_fit/_zoom+(ev.touches[0].pageX+ev.touches[1].pageX-_w*_viewSides)/2)
+            var y=((ev.touches[0].pageY+ev.touches[1].pageY-_h)/2)
+            $('.title-box').text(x+','+y)
+
             if(!_touchEvent) {
                 _touchEvent={
                     touches:{
