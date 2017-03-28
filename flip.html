@@ -8,9 +8,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="height = device-height,width = device-width,initial-scale = 1.0,minimum-scale = 1.0,maximum-scale = 1.0,user-scalable = no,target-densitydpi = device-dpi" />
+        <meta name="viewport"
+              content="height = device-height,width = device-width,initial-scale = 1,minimum-scale = 1.0,maximum-scale = 6.0,user-scalable = yes,target-densitydpi = device-dpi" />
     <title>page-flip</title>
     <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/common.css">-->
     <!--<link rel="stylesheet" type="text/css" src="epub/OEBPS/content/css/page.css">-->
@@ -449,7 +448,7 @@
 <script src="jquery.fullscreen-min.js"></script>
 <script src="flip.js"></script>
 <script src="loader.js"></script>
-<script src="libs/scissor.js"></script>
+<script src="detect-zoom.js"></script>
 <script>
 
     _flip = Flip()
@@ -575,6 +574,10 @@
         }
     })
 
+    document.body.addEventListener('gesturechange', function(ev){
+        ev.preventDefault()
+        alert(1)
+    },false)
 
     // nav element events
     $('.nav-next').bind('click',function(){
@@ -652,9 +655,9 @@
         }
     })
 
-
-
-
+    $(document).bind('mousemove', function(ev) {
+        ev.preventDefault()
+    })
 </script>
 
 </body>

@@ -824,20 +824,6 @@ var Flip = function(){
         return true
     }
 
-    $(document).bind('touchstart', function(){
-        ev.preventDefault()
-        ev.stopPropagation()
-    })
-    $(document).bind('touchmove', function(){
-        ev.preventDefault()
-        ev.stopPropagation()
-    })
-    $(document).bind('touchend', function(){
-        ev.preventDefault()
-        ev.stopPropagation()
-    })
-
-
     $(window).resize(function() {
         var hr = $('body').width()/_flipBook.width()
             vr = $('body').height()/_flipBook.height()
