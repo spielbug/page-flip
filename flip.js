@@ -3,54 +3,54 @@
  */
 
 
-var Flip = function(){
-    const VIEW_MODE_SINGLE='single'
-    const VIEW_MODE_DOUBLE='double'
+var Flip = function () {
+    const VIEW_MODE_SINGLE = 'single'
+    const VIEW_MODE_DOUBLE = 'double'
     const PATH_PREFIX = 'epub/OEBPS/content/';
 
     var _w, _h, _flipper, _left, _right, _made, _flipBook;
-    var _edge=0.06, _edgeShown = false
+    var _edge = 0.06, _edgeShown = false
     var _startPoint
     var _edgeAngle
     var _edgeSize
     var _clickedEdge
     var _easing
-    var _fit=1 // content zoom
-    var _zoom=1 // ui zoom step (1,2)
+    var _fit = 1 // content zoom
+    var _zoom = 1 // ui zoom step (1,2)
     var _timerID
-    var _viewSides=2 // double or single
+    var _viewSides = 2 // double or single
 
     // make each side (left, right) holder and call makeFlipper
     function make(flipBook) {
         // metric
-        flipBook = (flipBook.fn)? flipBook : $(flipBook)
+        flipBook = (flipBook.fn) ? flipBook : $(flipBook)
         _flipBook = flipBook
         var metricDiv = $('#page4')
         _w = metricDiv.width()
         _h = metricDiv.height()
 
         // resize container
-        flipBook.width(_w*_viewSides)
+        flipBook.width(_w * _viewSides)
         flipBook.height(_h)
 
         // resize scroller
-/*
-        $('.scroller').width(_w)
-        $('.scroller').height(_h)
-*/
+        /*
+         $('.scroller').width(_w)
+         $('.scroller').height(_h)
+         */
 
         // make edge (to receive event)
-        var edgeLeft = makeDiv(_w*_edge,_h,'','edge-left')
-        edgeLeft.css ({
-            position:'absolute',
-            left:'0px',
-            top:'0px',
+        var edgeLeft = makeDiv(_w * _edge, _h, '', 'edge-left')
+        edgeLeft.css({
+            position: 'absolute',
+            left: '0px',
+            top: '0px',
         })
-        var edgeRight = makeDiv(_w*_edge,_h,'','edge-right')
-        edgeRight.css ({
-            position:'absolute',
-            left:(_w*(_viewSides-_edge))+'px',
-            top:'0px',
+        var edgeRight = makeDiv(_w * _edge, _h, '', 'edge-right')
+        edgeRight.css({
+            position: 'absolute',
+            left: (_w * (_viewSides - _edge)) + 'px',
+            top: '0px',
         })
         flipBook.append(edgeLeft)
         flipBook.append(edgeRight)
@@ -62,11 +62,11 @@ var Flip = function(){
 
         // make child to have their wrapper and gradient
         var childs = flipBook.children()
-        var len=childs.length
-        for(var i = 0; i<len; i++) {
+        var len = childs.length
+        for (var i = 0; i < len; i++) {
             var child = $(childs[i])
             //console.log(child,child.attr('class'))
-            if(!child.hasClass('page') || child.parent().hasClass('fb-wrapper')) {
+            if (!child.hasClass('page') || child.parent().hasClass('fb-wrapper')) {
                 //console.log('this div will be ignored')
                 continue
 
@@ -80,17 +80,17 @@ var Flip = function(){
         }
 
         // make side
-        if(!_left) {
+        if (!_left) {
             _left = makeDiv(_w, _h, 'side-left')
             _left.addClass('side-left')
             _left.css({
-                position:'absolute',
+                position: 'absolute',
             })
             _right = makeDiv(_w, _h, 'side-right')
             _right.addClass('side-right')
             _right.css({
-                position:'absolute',
-                left:(_w)+'px',
+                position: 'absolute',
+                left: (_w) + 'px',
             })
             flipBook.prepend(_left)
             flipBook.prepend(_right)
@@ -100,11 +100,11 @@ var Flip = function(){
 
         // move to side
         $('#page4,#page5,#page6').parent().css({
-            'left' : _w * (_viewSides-1) // for double view mode, left will be _w, or 0
+            'left': _w * (_viewSides - 1) // for double view mode, left will be _w, or 0
         })
         //$('#page1,#page2,#page3').parent().appendTo('#side-left')
         $('#page1,#page2').parent().hide()
-        if(_viewSides==1) $('#page3').parent().hide()
+        if (_viewSides == 1) $('#page3').parent().hide()
         //$('#page6,#page5,#page4').parent().appendTo('#side-right')
         $('#page5,#page6').parent().hide()
 
@@ -120,13 +120,13 @@ var Flip = function(){
     // make wrapper and wrap chlid
     // put gradient into wrapper
     function makeWrapper(child) {
-        var wrapper=$('<DIV>').addClass('fb-wrapper')
+        var wrapper = $('<DIV>').addClass('fb-wrapper')
         wrapper.css({
-            position : 'absolute',
-            left:'0px',
-            top:'0px',
-            width:_w,
-            height:_h,
+            position: 'absolute',
+            left: '0px',
+            top: '0px',
+            width: _w,
+            height: _h,
         })
         //_right.append(wrapper)
         child.appendTo(wrapper)
@@ -134,11 +134,11 @@ var Flip = function(){
         // make gradient
         var gradient = $('<DIV>').addClass('gradient')
         gradient.css({
-            position : 'absolute',
-            left:'0px',
-            top:'0px',
-            width:_w,
-            height:_h,
+            position: 'absolute',
+            left: '0px',
+            top: '0px',
+            width: _w,
+            height: _h,
             //'z-index':3,
         })
         gradient.appendTo(wrapper)
@@ -152,14 +152,14 @@ var Flip = function(){
     // make flipper
     // flipper is div that include flipping div (flip-top) and flipped div (flip-bottom)
     function makeFlipper(container) {
-        if(!container.fn) container = $(container)
+        if (!container.fn) container = $(container)
         // div for flipping
         _flipper = makeDiv(_w, _h, 'flipper')
         _flipper.addClass('flipper')
         _flipper.css({
-            'position':'absolute',
+            'position': 'absolute',
             //'left' : _w,
-            'overflow':'hidden',
+            'overflow': 'hidden',
             //'z-index' : 3
         })
         container.append(_flipper)
@@ -171,71 +171,75 @@ var Flip = function(){
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
-        var ftr = makeDiv(_w, _h, 'flip-top-right','flip-top-right flip-page')
+        var ftr = makeDiv(_w, _h, 'flip-top-right', 'flip-top-right flip-page')
         wrapper = makeWrapper(ftr)
-        var ftl = makeDiv(_w, _h, 'flip-top-left','flip-top-left flip-page')
+        var ftl = makeDiv(_w, _h, 'flip-top-left', 'flip-top-left flip-page')
         wrapper.prepend(ftl)
         //wrapper.css('z-index','9')
         wrapper.appendTo(_flipper)
 
-        $('.flip-page').css('position','absolute')
+        $('.flip-page').css('position', 'absolute')
 
     }
 
     function getFrameHtml(src, target) {
-        $(target).attr('src',src.attr('src'))
-        if(src[0].contentDocument.head==null||src[0].contentDocument.body==null) return ''
-        src.data('stat','loading')
+        $(target).attr('src', src.attr('src'))
+        if (src[0].contentDocument.head == null || src[0].contentDocument.body == null) return ''
+        src.data('stat', 'loading')
         var head = src[0].contentDocument.head
         $(head).find('meta').remove()
         $(head).find('title').remove()
         var body = src[0].contentDocument.body
-        return head.innerHTML+body.innerHTML
-            +"<script>$('"+target+"').addClass('loaded')</script>"
+        return head.innerHTML + body.innerHTML
+            + "<script>$('" + target + "').addClass('loaded')</script>"
     }
+
     function blankHtml(src, target) {
         $(target).addClass('loaded')
         return "<div style='width:100%;height:100%;background:white;'></div>"
     }
+
     function loadFlipPage() {
-        if(_viewSides==1) loadFlipPage1()
+        if (_viewSides == 1) loadFlipPage1()
         else loadFlipPage2()
     }
+
     function loadFlipPage2() {
 
         $('.flip-bottom-left').html(replace(
-            getFrameHtml($('#page3'),'.flip-bottom-left'),
+            getFrameHtml($('#page3'), '.flip-bottom-left'),
             PATH_PREFIX)
         )
         $('.flip-top-left').html(replace(
-            getFrameHtml($('#page2'),'.flip-top-left'),
+            getFrameHtml($('#page2'), '.flip-top-left'),
             PATH_PREFIX)
         )
         $('.flip-bottom-right').html(replace(
-            getFrameHtml($('#page4'),'.flip-bottom-right'),
+            getFrameHtml($('#page4'), '.flip-bottom-right'),
             PATH_PREFIX)
         )
         $('.flip-top-right').html(replace(
-            getFrameHtml($('#page5'),'.flip-top-right'),
+            getFrameHtml($('#page5'), '.flip-top-right'),
             PATH_PREFIX)
         )
     }
+
     function loadFlipPage1() {
 
         $('.flip-bottom-left').html(replace(
-            getFrameHtml($('#page4'),'.flip-bottom-left'),
+            getFrameHtml($('#page4'), '.flip-bottom-left'),
             PATH_PREFIX)
         )
         $('.flip-top-left').html(replace(
-            blankHtml($('#page4'),'.flip-top-left'),
+            blankHtml($('#page4'), '.flip-top-left'),
             PATH_PREFIX)
         )
         $('.flip-bottom-right').html(replace(
-            getFrameHtml($('#page4'),'.flip-bottom-right'),
+            getFrameHtml($('#page4'), '.flip-bottom-right'),
             PATH_PREFIX)
         )
         $('.flip-top-right').html(replace(
-            blankHtml($('#page4'),'.flip-top-right'),
+            blankHtml($('#page4'), '.flip-top-right'),
             PATH_PREFIX)
         )
     }
@@ -243,8 +247,8 @@ var Flip = function(){
     // make div conveniently
     function makeDiv(w, h, id, className) {
         var div = $('<div>')
-        if(id) div.attr('id', id)
-        if(className) div.addClass(className)
+        if (id) div.attr('id', id)
+        if (className) div.addClass(className)
         div.width(w)
         div.height(h)
 
@@ -255,15 +259,15 @@ var Flip = function(){
     // href, src, url 요소를 대치한다.
     function replace(s, prefix) {
 
-        s = s.replace(/src=\"/gi,'src="'+prefix+'')
-        s = s.replace(/href=\"/gi,'href="'+prefix+'')
-        s = s.replace(/url\(\"/gi,'url("'+prefix+'')
+        s = s.replace(/src=\"/gi, 'src="' + prefix + '')
+        s = s.replace(/href=\"/gi, 'href="' + prefix + '')
+        s = s.replace(/url\(\"/gi, 'url("' + prefix + '')
         return s;
     }
 
     function startFlip(bottom, top, side, delay) {
-        bottom = bottom.fn?bottom:$(bottom)
-        top = top.fn?top:$(top)
+        bottom = bottom.fn ? bottom : $(bottom)
+        top = top.fn ? top : $(top)
         delay = delay || 500
 
         // show pages in flipper
@@ -271,63 +275,63 @@ var Flip = function(){
         $('.gradient').show()
         $('.flip-page').hide()
         // $('.page').parent().hide()
-        setTimeout(function(){
-            if(side=='right') {
+        setTimeout(function () {
+            if (side == 'right') {
                 $('.flip-bottom-right').show()
                 $('.flip-top-right').show()
-                if(_viewSides==2) $('#page6').parent().show()
+                if (_viewSides == 2) $('#page6').parent().show()
             }
             else {
                 $('.flip-bottom-left').show()
                 $('.flip-top-left').show()
-                if(_viewSides==2) $('#page1').parent().show()
+                if (_viewSides == 2) $('#page1').parent().show()
             }
             bottom.parent().hide()
             // hide flipping top page (double view mode only)
             // single mode flipping top page is just blank, so hide nothig
-            if(_viewSides==2) top.parent().hide()
+            if (_viewSides == 2) top.parent().hide()
             else  top.parent().show()
             _flipper.show()
 
-        },delay)
+        }, delay)
     }
 
     function endFlip(cancel, direction) {
 
         _flipper.hide()
 
-        if(direction==-1) {
-            _flipper.css ('left','0')
+        if (direction == -1) {
+            _flipper.css('left', '0')
         }
         else {
-            _flipper.css ('left',_w)
+            _flipper.css('left', _w)
         }
 
         _flipper.css({
-            transform : ''
+            transform: ''
         })
 
         $('.flip-page').parent().css({
-            transform:'',
-            left:'0',
-            top:'0',
+            transform: '',
+            left: '0',
+            top: '0',
         })
 
         $('.gradient').css({
-            background : ''
+            background: ''
         })
         $('.gradient').hide()
 
 
         //console.log('cancel',cancel)
-        if(!cancel) {
+        if (!cancel) {
             $('.flip-page').removeClass('loaded') // remove flicker
             $('#page1,#page6').parent().hide()
             $('.flip-page').hide()
-            if(direction==-1) {
+            if (direction == -1) {
                 next()
             }
-            else if(direction==1){
+            else if (direction == 1) {
                 previous()
             }
 
@@ -336,7 +340,7 @@ var Flip = function(){
             //$(window).trigger('resize')
         }
 
-        if(_viewSides==2) {
+        if (_viewSides == 2) {
             $('#page1,#page2,#page5,#page6').parent().hide()
             $('#page3,#page4').parent().show()
         }
@@ -347,39 +351,39 @@ var Flip = function(){
         }
 
         $('#page1,#page2,#page3').parent().css({
-            'left' : 0
+            'left': 0
         })
         $('#page4,#page5,#page6').parent().css({
-            'left' : _w * (_viewSides-1) // for double view mode, left will be _w, or 0
+            'left': _w * (_viewSides - 1) // for double view mode, left will be _w, or 0
         })
 
     }
 
     function flipNext() {
-        startFlip('#page4','#page5','right', 1);
+        startFlip('#page4', '#page5', 'right', 1);
         ease(
             EasingFunctions.easeInOutQuad,
             function (step) {
-                reformFlipper(null, null, -0.1*(1-step), -_w*2*step)
+                reformFlipper(null, null, -0.1 * (1 - step), -_w * 2 * step)
             },
-            function() {
+            function () {
                 endFlip(false, -1)
             }
-            ,300,15, 0
+            , 300, 15, 0
         )
     }
 
     function flipPrevious() {
-        startFlip('#page3','#page2','left', 1);
+        startFlip('#page3', '#page2', 'left', 1);
         ease(
             EasingFunctions.easeInOutQuad,
             function (step) {
-                reformFlipper(null, null, 0.1*(1-step), _w*2*step)
+                reformFlipper(null, null, 0.1 * (1 - step), _w * 2 * step)
             },
-            function() {
+            function () {
                 endFlip(false, 1)
             }
-            ,300,15, 0
+            , 300, 15, 0
         )
     }
 
@@ -405,11 +409,13 @@ var Flip = function(){
             $('#page0').attr('id', 'page6')
         }
 
-        _book.page+=_viewSides
+        _book.page += _viewSides
         _book.resetLoadCount()
         _book.setLoadTriggerCounter(_viewSides)
-        _book.loadSingle('#page5',_book.page+1, function(){loadFlipPage()})
-        if(_viewSides==2) _book.loadSingle('#page6',_book.page+2)
+        _book.loadSingle('#page5', _book.page + 1, function () {
+            loadFlipPage()
+        })
+        if (_viewSides == 2) _book.loadSingle('#page6', _book.page + 2)
 
 
     }
@@ -437,13 +443,16 @@ var Flip = function(){
         }
         // load previous page
         //_book.previous()
-        _book.page-=_viewSides
+        _book.page -= _viewSides
         _book.resetLoadCount()
         _book.setLoadTriggerCounter(_viewSides)
-        if(_viewSides==2) _book.loadSingle('#page1',_book.page-3)
-        _book.loadSingle('#page2',_book.page-2, function(){loadFlipPage()})
+        if (_viewSides == 2) _book.loadSingle('#page1', _book.page - 3)
+        _book.loadSingle('#page2', _book.page - 2, function () {
+            loadFlipPage()
+        })
 
     }
+
     function showBuffer() {
         $('.buffer-left').show()
         $('.buffer-right').show()
@@ -457,81 +466,81 @@ var Flip = function(){
     }
 
     function getRotatedSize(w, h, angle) {
-        var x1 = -w/2
-        var x2 = w/2
-        var y1 = -h/2
-        var y2 = h/2
-        var w = Math.max(x2*Math.cos(angle)-y2*Math.sin(angle),
-                x2*Math.cos(angle)-y1*Math.sin(angle))*2
-        var h = Math.max(x1*Math.sin(angle)+y2*Math.cos(angle),
-                x2*Math.sin(angle)+y2*Math.cos(angle))*2
-        return {'w':w, 'h':h }
+        var x1 = -w / 2
+        var x2 = w / 2
+        var y1 = -h / 2
+        var y2 = h / 2
+        var w = Math.max(x2 * Math.cos(angle) - y2 * Math.sin(angle),
+                x2 * Math.cos(angle) - y1 * Math.sin(angle)) * 2
+        var h = Math.max(x1 * Math.sin(angle) + y2 * Math.cos(angle),
+                x2 * Math.sin(angle) + y2 * Math.cos(angle)) * 2
+        return {'w': w, 'h': h}
     }
 
 
     function reformFlipper(w, h, angle, distance) {
         w = w | _w
         h = h | _h
-        $('.flip-bottom').css('margin-left','0')
+        $('.flip-bottom').css('margin-left', '0')
         //console.log(w,h,angle,distance)
         var rs = getRotatedSize(w, h, angle)
         //_flipper.removeAttr('style');
 
         // limit distance
-        var pageWidth = Math.abs(1/Math.cos(angle)*distance)
-        var sign = (distance>0)? 1:-1;
-        if(pageWidth>_w) distance = sign * _w * Math.abs(Math.cos(angle))
+        var pageWidth = Math.abs(1 / Math.cos(angle) * distance)
+        var sign = (distance > 0) ? 1 : -1;
+        if (pageWidth > _w) distance = sign * _w * Math.abs(Math.cos(angle))
 
         var fPos = _right.position()
-        if(distance > 0 || _viewSides==1) {
+        if (distance > 0 || _viewSides == 1) {
             fPos = _left.position()
         }
 
         _flipper.css({
-            'left':(fPos.left/(_fit*_zoom)-(rs.w-_w)/2),
-            'top':(fPos.top/(_fit*_zoom)-(rs.h-_h)/2)
+            'left': (fPos.left / (_fit * _zoom) - (rs.w - _w) / 2),
+            'top': (fPos.top / (_fit * _zoom) - (rs.h - _h) / 2)
         })
 
         _flipper.width(rs.w)
         _flipper.height(rs.h)
         _flipper.css({
-            'transform':'rotateZ('+(angle)+'rad) translate('+(distance)+'px)',
+            'transform': 'rotateZ(' + (angle) + 'rad) translate(' + (distance) + 'px)',
             //'transform':'rotateZ('+rad2deg(angle)+'deg)',
         })
 
         reformDiv('.flip-bottom-right', rs.w, rs.h, -angle, distance)
-        if(distance>0) reformFlippingDivLeft('.flip-top-right', rs.w, rs.h, -angle, distance)
+        if (distance > 0) reformFlippingDivLeft('.flip-top-right', rs.w, rs.h, -angle, distance)
         else reformFlippingDivRight('.flip-top-left', rs.w, rs.h, -angle, distance)
     }
 
     function reformDiv(div, dw, dh, angle, distance) {
-        if(!div.fn) div = $(div)
-        var top = (dh-_h)/2
-        var left = (dw-_w)/2
+        if (!div.fn) div = $(div)
+        var top = (dh - _h) / 2
+        var left = (dw - _w) / 2
         var wrapper = div.parent()
         wrapper.css({
-            'top':'0px',
+            'top': '0px',
             'left': '0px',
             //'width': _w,
             //'height': _h,
             //'z-index':0,
-            'transform':'translate('+(-distance+left)+'px, '+top+'px) rotateZ('+(angle)+'rad)'
+            'transform': 'translate(' + (-distance + left) + 'px, ' + top + 'px) rotateZ(' + (angle) + 'rad)'
             //'transform':'translate('+left+'px, '+top+'px) rotateZ('+rad2deg(angle)+'deg)',
         })
     }
 
     function reformFlippingDivLeft(div, rw, rh, angle, distance) {
-        if(!div.fn) div = $(div)
-        var topMargin = (rh-_h)/2
+        if (!div.fn) div = $(div)
+        var topMargin = (rh - _h) / 2
 
-        var rcx = _w - (Math.cos(angle)*_w+distance)/Math.cos(angle)
+        var rcx = _w - (Math.cos(angle) * _w + distance) / Math.cos(angle)
         rcx = _w + rcx
         var rcy = 0
-        var fdTop = -Math.tan(angle)*(Math.cos(angle)*_w-distance)
+        var fdTop = -Math.tan(angle) * (Math.cos(angle) * _w - distance)
         var fdLeft = -rcx
         //console.log(distance, rcx, fdLeft, fdTop)
-        if(angle>0) {
-            fdTop = topMargin*2+fdTop
+        if (angle > 0) {
+            fdTop = topMargin * 2 + fdTop
             rcy = _h;
         }
 
@@ -540,24 +549,24 @@ var Flip = function(){
             //'z-index':6,
             //'width': _w,
             //'height': _h,
-            'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
-            'transform-origin':rcx+'px '+rcy+'px',
+            'transform': 'translate(' + fdLeft + 'px, ' + fdTop + 'px) rotateZ(' + (-angle) + 'rad)',
+            'transform-origin': rcx + 'px ' + rcy + 'px',
         })
         gradientFlippingDiv(wrapper, angle, distance)
     }
 
     function reformFlippingDivRight(div, rw, rh, angle, distance) {
-        if(!div.fn) div = $(div)
-        var topMargin = (rh-_h)/2
+        if (!div.fn) div = $(div)
+        var topMargin = (rh - _h) / 2
 
-        var rcx = _w - (Math.cos(angle)*_w+distance)/Math.cos(angle)
+        var rcx = _w - (Math.cos(angle) * _w + distance) / Math.cos(angle)
         //var rcx = -distance
         var rcy = 0
-        var fdTop = Math.tan(angle)*(Math.cos(angle)*_w+distance)
-        var fdLeft = rw-rcx
+        var fdTop = Math.tan(angle) * (Math.cos(angle) * _w + distance)
+        var fdLeft = rw - rcx
 
-        if(angle<0) {
-            fdTop = topMargin*2+fdTop
+        if (angle < 0) {
+            fdTop = topMargin * 2 + fdTop
             rcy = _h;
         }
 
@@ -566,8 +575,8 @@ var Flip = function(){
             //'z-index':6,
             'width': _w,
             'height': _h,
-            'transform':'translate('+fdLeft+'px, '+fdTop+'px) rotateZ('+(-angle)+'rad)',
-            'transform-origin':rcx+'px '+rcy+'px',
+            'transform': 'translate(' + fdLeft + 'px, ' + fdTop + 'px) rotateZ(' + (-angle) + 'rad)',
+            'transform-origin': rcx + 'px ' + rcy + 'px',
         })
         gradientFlippingDiv(wrapper, angle, distance)
 
@@ -577,16 +586,16 @@ var Flip = function(){
         //console.log(div, angle, distance)
         var g = div.find('.gradient')
 
-        if(distance>0) {
+        if (distance > 0) {
             g.css({
-                background : 'linear-gradient('+(angle-Math.PI/2)+'rad, transparent 0px, transparent '+(distance-100)
-                +'px, rgba(0,0,0,'+(0.3*(1.1-distance/_w))+') '+(distance-20)+'px, transparent '+(distance)+'px)'
+                background: 'linear-gradient(' + (angle - Math.PI / 2) + 'rad, transparent 0px, transparent ' + (distance - 100)
+                + 'px, rgba(0,0,0,' + (0.3 * (1.1 - distance / _w)) + ') ' + (distance - 20) + 'px, transparent ' + (distance) + 'px)'
             })
         }
         else {
             g.css({
-                background : 'linear-gradient('+(angle+Math.PI/2)+'rad, transparent 0px, transparent '+(-distance-100)
-                +'px, rgba(0,0,0,'+0.3*(1.1+distance/_w)+') '+(-distance-20)+'px, transparent '+(-distance)+'px)'
+                background: 'linear-gradient(' + (angle + Math.PI / 2) + 'rad, transparent 0px, transparent ' + (-distance - 100)
+                + 'px, rgba(0,0,0,' + 0.3 * (1.1 + distance / _w) + ') ' + (-distance - 20) + 'px, transparent ' + (-distance) + 'px)'
             })
         }
     }
@@ -594,12 +603,14 @@ var Flip = function(){
     function ease(easeFunc, stepFunc, endFunc,
                   msec, interval, startValue) {
         _easing = true
-        if(startValue<1) {
-            startValue+=interval/msec
+        if (startValue < 1) {
+            startValue += interval / msec
             var result = easeFunc(startValue)
             stepFunc(result)
-            setTimeout(function(){ease(easeFunc, stepFunc, endFunc,
-                msec, interval, startValue)}, interval)
+            setTimeout(function () {
+                ease(easeFunc, stepFunc, endFunc,
+                    msec, interval, startValue)
+            }, interval)
         }
         else {
             stepFunc(1)
@@ -609,9 +620,9 @@ var Flip = function(){
         }
     }
 
-    function inRect(x,y,ox,oy,width,height) {
+    function inRect(x, y, ox, oy, width, height) {
         //console.log(x,y,ox,oy)
-        if(x>=ox && x<=ox+width && y>=oy && y <=oy+height) return true
+        if (x >= ox && x <= ox + width && y >= oy && y <= oy + height) return true
         return false
     }
 
@@ -621,14 +632,14 @@ var Flip = function(){
                 reformFlipper(null, null, deg2rad(angle), stepFunc(step))
             },
             function () {
-                if(endFunc) endFunc()
+                if (endFunc) endFunc()
             }, msec, 15, 0
         )
     }
 
-    $(document).bind('mousedown',function(ev){
-        if(!_flipBook) return
-        if(!_edgeShown) return
+    $(document).bind('mousedown', function (ev) {
+        if (!_flipBook) return
+        if (!_edgeShown) return
         ev.preventDefault()
         ev.stopPropagation()
 
@@ -639,102 +650,129 @@ var Flip = function(){
         if (inRect(x, y,
                 o.left, o.top,
                 _w * _edge, _w * _edge)) {
-            _startPoint = {x:x, y:y}
+            _startPoint = {x: x, y: y}
             _clickedEdge = 'top-left'
         }
         else if (inRect(x, y,
                 o.left, o.top + zHeight(_flipBook) - _w * _edge,
                 _w * _edge, _w * _edge)) {
-            _startPoint = {x:x, y:y}
+            _startPoint = {x: x, y: y}
             _clickedEdge = 'bottom-left'
         }
         else if (inRect(x, y,
                 o.left + zWidth(_flipBook) - _w * _edge, o.top,
                 _w * _edge, _w * _edge)) {
-            _startPoint = {x:x, y:y}
+            _startPoint = {x: x, y: y}
             _clickedEdge = 'top-right'
         }
         else if (inRect(x, y,
                 o.left + zWidth(_flipBook) - _w * _edge, o.top + zHeight(_flipBook) - _w * _edge,
                 _w * _edge, _w * _edge)) {
-            _startPoint = {x:x, y:y}
+            _startPoint = {x: x, y: y}
             _clickedEdge = 'bottom-right'
         }
     })
 
-    $(document).bind('mouseup',function(ev){
-        if(!_flipBook) return
-        if(!_startPoint) return
+    $(document).bind('mouseup', function (ev) {
+        if (!_flipBook) return
+        if (!_startPoint) return
         ev.preventDefault()
         ev.stopPropagation()
 
-        var dx = (ev.pageX-_startPoint.x)/(_fit*_zoom)*1.5
-        var dy = (ev.pageY-_startPoint.y)/(_fit*_zoom)*1.5
+        var dx = (ev.pageX - _startPoint.x) / (_fit * _zoom) * 1.5
+        var dy = (ev.pageY - _startPoint.y) / (_fit * _zoom) * 1.5
         var angle = Math.atan2(dy, dx)
-        var distance = Math.sqrt(dx*dx + dy*dy)/2
-        var cancel = (distance/_w<0.4)
-        if (distance<10) { // just clicked
+        var distance = Math.sqrt(dx * dx + dy * dy) / 2
+        var cancel = (distance / _w < 0.4)
+        if (distance < 10) { // just clicked
             cancel = false
-            switch(_clickedEdge) {
-                case 'top-left':angle = 0.2;distance = 300;dx = 2*distance; dy=100;_startPoint.direction = 1;break;
-                case 'top-right':angle = -0.2;distance = 300;dx = -2*distance; dy=100;_startPoint.direction = -1;break;
-                case 'bottom-left':angle = -0.2;distance = 300;dx = 2*distance; dy=-100;_startPoint.direction = 1;break;
-                case 'bottom-right':angle = 0.2;distance = 300;dx = -2*distance; dy=-100;_startPoint.direction = -1;break;
+            switch (_clickedEdge) {
+                case 'top-left':
+                    angle = 0.2;
+                    distance = 300;
+                    dx = 2 * distance;
+                    dy = 100;
+                    _startPoint.direction = 1;
+                    break;
+                case 'top-right':
+                    angle = -0.2;
+                    distance = 300;
+                    dx = -2 * distance;
+                    dy = 100;
+                    _startPoint.direction = -1;
+                    break;
+                case 'bottom-left':
+                    angle = -0.2;
+                    distance = 300;
+                    dx = 2 * distance;
+                    dy = -100;
+                    _startPoint.direction = 1;
+                    break;
+                case 'bottom-right':
+                    angle = 0.2;
+                    distance = 300;
+                    dx = -2 * distance;
+                    dy = -100;
+                    _startPoint.direction = -1;
+                    break;
             }
 
             //checkMousePositionDelayed(ev)
         }
 
-        if(dx<0) {
-            distance=-distance
+        if (dx < 0) {
+            distance = -distance
             angle = Math.atan2(-dy, -dx)
         }
 
         var direction = _startPoint.direction
         //startPoint = undefined;
-        var equation = function(d, s) {
-            d=Math.abs(d)
-            return direction*(d+s*(2*_w-d))
+        var equation = function (d, s) {
+            d = Math.abs(d)
+            return direction * (d + s * (2 * _w - d))
         }
         var duration = 300
 
         //console.log('cancel',cancel, 'distance' , distance, 'angle', angle, 'dx', dx, 'dy', dy)
 
         // if cancel, back page to orgin. slowdown
-        if(cancel) {
-            equation = function(d, s) {
-                return d-s*d
+        if (cancel) {
+            equation = function (d, s) {
+                return d - s * d
             }
         }
 
 
         ease(EasingFunctions.easeInOutQuad,
-            function(step){
+            function (step) {
                 //console.log(angle-step*angle,equation(distance, step))
-                reformFlipper(null, null, angle - step*angle, equation(distance, step))
-            },function(done){
+                reformFlipper(null, null, angle - step * angle, equation(distance, step))
+            }, function (done) {
                 //console.log('done')
                 endFlip(cancel, direction)
                 _startPoint = undefined
                 _edgeShown = false
-            },duration,15, 0)
+            }, duration, 15, 0)
     })
 
-    $(document).bind('mousemove',function(ev) {
+    $(document).bind('mousemove', function (ev) {
         //if(!_timerID) {
-            checkMousePosition(ev)
+        checkMousePosition(ev)
         //}
     });
 
     function checkMousePositionDelayed(ev) {
-        if(!checkMousePosition(ev)) {
-            _timerID = setTimeout(function() {checkMousePositionDelayed(ev)}, 100)
+        if (!checkMousePosition(ev)) {
+            _timerID = setTimeout(function () {
+                checkMousePositionDelayed(ev)
+            }, 100)
         }
     }
+
     function checkMousePosition(ev) {
-        if(!_flipBook) return false
-        if(_easing) return false
-        if($('.loaded').length<10) return false
+        if (!_flipBook) return false
+        if (_easing) return false
+        if ($('.loaded').length < 10) return false
 
         clearTimeout(_timerID)
         _timerID = undefined
@@ -748,106 +786,115 @@ var Flip = function(){
 
         if (inRect(x, y, o.left, o.top, _w * _edge, _w * _edge)) {
             // console.log('left top')
-            if(_edgeShown) return
-            if(_book.page<=1) return true // true means don't retry
+            if (_edgeShown) return
+            if (_book.page <= 1) return true // true means don't retry
             _edgeShown = true
             _edgeAngle = 45
             _edgeSize = _w * _edge / 1.414
-            if(_viewSides==2) startFlip('#page3', '#page2', 'left')
+            if (_viewSides == 2) startFlip('#page3', '#page2', 'left')
             else  startFlip('#page4', '#page3', 'left')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
+            easeEdge(_edgeAngle, function (step) {
+                return _edgeSize * step
+            }, null, 700)
         }
         else if (inRect(x, y, o.left, o.top + zHeight(_flipBook) - _w * _edge, _w * _edge, _w * _edge)) {
             // console.log('left bottom')
-            if(_edgeShown) return
-            if(_book.page<=1) return true
+            if (_edgeShown) return
+            if (_book.page <= 1) return true
             _edgeShown = true
             _edgeAngle = -45
             _edgeSize = _w * _edge / 1.414
-            if(_viewSides==2) startFlip('#page3', '#page2', 'left')
+            if (_viewSides == 2) startFlip('#page3', '#page2', 'left')
             else startFlip('#page4', '#page3', 'left')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
+            easeEdge(_edgeAngle, function (step) {
+                return _edgeSize * step
+            }, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_flipBook) - _w * _edge, o.top, _w * _edge, _w * _edge)) {
             // console.log('right top')
-            if(_edgeShown) return
-            if(_book.page>=_book.totalPages) return true
+            if (_edgeShown) return
+            if (_book.page >= _book.totalPages) return true
             _edgeShown = true
             _edgeAngle = -45
             _edgeSize = -_w * _edge / 1.414
             startFlip('#page4', '#page5', 'right')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
+            easeEdge(_edgeAngle, function (step) {
+                return _edgeSize * step
+            }, null, 700)
         }
         else if (inRect(x, y, o.left + zWidth(_flipBook) - _w * _edge, o.top + zHeight(_flipBook) - _w * _edge, _w * _edge, _w * _edge)) {
             // console.log('right bottom')
-            if(_edgeShown) return
-            if(_book.page>=_book.totalPages) return true
+            if (_edgeShown) return
+            if (_book.page >= _book.totalPages) return true
             _edgeShown = true
             _edgeSize = -_w * _edge / 1.414
             _edgeAngle = 45
             startFlip('#page4', '#page5', 'right')
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * step}, null, 700)
+            easeEdge(_edgeAngle, function (step) {
+                return _edgeSize * step
+            }, null, 700)
         }
-        else if(_startPoint) {
-            var dx = (ev.pageX-_startPoint.x)/(_fit*_zoom)*1.5
-            var dy = (ev.pageY-_startPoint.y)/(_fit*_zoom)*1.5
+        else if (_startPoint) {
+            var dx = (ev.pageX - _startPoint.x) / (_fit * _zoom) * 1.5
+            var dy = (ev.pageY - _startPoint.y) / (_fit * _zoom) * 1.5
             var angle = Math.atan2(dy, dx)
-            var distance = Math.sqrt(dx*dx + dy*dy)/2
-            if(dx==0) return;
+            var distance = Math.sqrt(dx * dx + dy * dy) / 2
+            if (dx == 0) return;
 
-            if(_startPoint.direction) {
-                if(_startPoint.direction * dx < 0) return;
+            if (_startPoint.direction) {
+                if (_startPoint.direction * dx < 0) return;
             }
             else {
-                _startPoint.direction = dx>0?1:-1
+                _startPoint.direction = dx > 0 ? 1 : -1
             }
 
-            if(dx<0) {
-                distance=-distance
+            if (dx < 0) {
+                distance = -distance
                 angle = Math.atan2(-dy, -dx)
             }
             //console.log(distance)
-            setTimeout(function() {
+            setTimeout(function () {
                 reformFlipper(_w, _h, angle, distance)
-            },1)
+            }, 1)
 
         }
         else {
-            if(!_edgeShown) return
+            if (!_edgeShown) return
             _edgeShown = false
             // clear timeout
-            easeEdge(_edgeAngle, function(step) { return _edgeSize * (1-step*0.999) },
-                function() {
-                    endFlip(true, _edgeSize>0?1:-1)
+            easeEdge(_edgeAngle, function (step) {
+                    return _edgeSize * (1 - step * 0.999)
+                },
+                function () {
+                    endFlip(true, _edgeSize > 0 ? 1 : -1)
                 }, 500)
         }
         return true
     }
 
-    $(window).resize(function() {
-        var hr = $('body').width()/_flipBook.width()
-            vr = $('body').height()/_flipBook.height()
-        fitScale(Math.min(hr,vr))
+    $(window).resize(function () {
+        var hr = $('body').width() / _flipBook.width()
+        vr = $('body').height() / _flipBook.height()
+        fitScale(Math.min(hr, vr))
     })
 
 
-
     function zWidth(s) {
-        s=(s.fn)?s:$(s)
-        return s.width()*_fit*_zoom
+        s = (s.fn) ? s : $(s)
+        return s.width() * _fit * _zoom
     }
 
     function zHeight(s) {
-        s=(s.fn)?s:$(s)
-        return s.height()*_fit*_zoom
+        s = (s.fn) ? s : $(s)
+        return s.height() * _fit * _zoom
     }
 
     function _w() {
-        return _w * _fit*_zoom
+        return _w * _fit * _zoom
     }
 
     function _h() {
-        return _h * _fit*_zoom
+        return _h * _fit * _zoom
     }
 
     function fitScale(fit) {
@@ -857,120 +904,130 @@ var Flip = function(){
         // })
         // _w *= zx
         // _h *= zy
-        if(_zoom>1) return
+        if (_zoom > 1) return
 
-        fit-=0.06
+        fit -= 0.06
         _fit = fit
 
         transformFlipBook()
     }
 
     var _touchEvent = undefined
-    function handleIframeTouchMove(ev, frame) {
-        if(ev.touches.length==2) {
-            // pinch
-            var pos=$(frame).parent().position()
-            var x=(pos.left/_fit/_zoom+(ev.touches[0].pageX+ev.touches[1].pageX-_w*_viewSides)/2)
-            var y=((ev.touches[0].pageY+ev.touches[1].pageY-_h)/2)
-            $('.title-box').text(x+','+y)
 
-            if(!_touchEvent) {
-                _touchEvent={
-                    touches:{
-                        x1:ev.touches[0].screenX,
-                        y1:ev.touches[0].screenY,
-                        x2:ev.touches[1].screenX,
-                        y2:ev.touches[1].screenY,
-                    } ,
-                    zoom:_zoom
+    function handleIframeTouchMove(ev, frame) {
+        if (ev.touches.length == 2) {
+            // pinch
+            var pos = $(frame).parent().position()
+            var x = (pos.left / _fit / _zoom + (ev.touches[0].pageX + ev.touches[1].pageX - _w * _viewSides) / 2)
+            var y = ((ev.touches[0].pageY + ev.touches[1].pageY - _h) / 2)
+            // $('.title-box').text(x + ',' + y)
+
+            if (!_touchEvent) {
+                _touchEvent = {
+                    touches: {
+                        x1: ev.touches[0].screenX,
+                        y1: ev.touches[0].screenY,
+                        x2: ev.touches[1].screenX,
+                        y2: ev.touches[1].screenY,
+                    },
+                    zoom: _zoom
                 }
             }
             else {
                 var oldDistance = Math.sqrt(
-                    Math.pow(_touchEvent.touches.x1-_touchEvent.touches.x2,2)
-                    +Math.pow(_touchEvent.touches.y1-_touchEvent.touches.y2,2)
+                    Math.pow(_touchEvent.touches.x1 - _touchEvent.touches.x2, 2)
+                    + Math.pow(_touchEvent.touches.y1 - _touchEvent.touches.y2, 2)
                 )
                 var newDistance = Math.sqrt(
-                    Math.pow(ev.touches[0].screenX-ev.touches[1].screenX,2)
-                    +Math.pow(ev.touches[0].screenY-ev.touches[1].screenY,2)
+                    Math.pow(ev.touches[0].screenX - ev.touches[1].screenX, 2)
+                    + Math.pow(ev.touches[0].screenY - ev.touches[1].screenY, 2)
                 )
-                var newZoom = _touchEvent.zoom+10*(newDistance - oldDistance)/Math.max(window.innerHeight , window.innerWidth)
+                var newZoom = _touchEvent.zoom + 10 * (newDistance - oldDistance) / Math.max(window.innerHeight, window.innerWidth)
                 // $('.title-box').text(''+(newDistance-oldDistance))
-                if(newZoom>5) newZoom=5
-                if(newZoom<1.1) newZoom=1
+                if (newZoom > 5) newZoom = 5
+                if (newZoom < 1.1) newZoom = 1
 
-                // zoom(newZoom)
+                zoom(newZoom)
+                // zoom(newZoom,{x:x,y:y})
 
-                _zoom = newZoom
-                _flipBook.css({
-                    'transform':'scale('+(_fit*_zoom)+')',
-                    'transform-origin':'0px 0px',
-                    'left':(_flipBook.parent().width()-(_flipBook.width()+x)*_fit*_zoom)/2,
-                    'top':(_flipBook.parent().height()-(_flipBook.height()+y)*_fit*_zoom)/2,
-                })
             }
         }
         ev.preventDefault()
     }
+
     function handleIframeTouchEnd(ev) {
-        _touchEvent=undefined
+        _touchEvent = undefined
         // $('.title-box').text('touch end')
-        if(_zoom>1) iframeScrollEnabled(true)
+        if (_zoom > 1) iframeScrollEnabled(true)
         else iframeScrollEnabled(false)
     }
+
     function handleIframeMouseMove(delta) {
         //console.log(delta.x,delta.y)
-        if(_touchEvent) return
+        if (_touchEvent) return
         var pos = $('#fb').position()
         $('#fb').css({
-            'left':pos.left + delta.x,
-            'top':pos.top + delta.y,
+            'left': pos.left + delta.x,
+            'top': pos.top + delta.y,
         })
     }
 
-    function zoom(step){
-        if(step) {
-            _zoom=step
-            transformFlipBook()
+    function zoom(step, zoomCenter) {
+        if (step) {
+            _zoom = step
+            transformFlipBook(zoomCenter)
         }
         else return _zoom
     }
 
     function iframeScrollEnabled(bool) {
-        $('iframe').each(function(a,b){b.contentWindow.scrollEnabled=bool})
+        $('iframe').each(function (a, b) {
+            b.contentWindow.scrollEnabled = bool
+        })
     }
 
-    function transformFlipBook() {
+    function transformFlipBook(zoomCenter) {
+        // console.log(zoomCenter)
         _flipBook.css({
-            'transform':'scale('+(_fit*_zoom)+')',
-            'transform-origin':'0px 0px',
-            'left':(_flipBook.parent().width()-_flipBook.width()*_fit*_zoom)/2,
-            'top':(_flipBook.parent().height()-_flipBook.height()*_fit*_zoom)/2,
+            'transform': 'scale(' + (_fit * _zoom) + ')',
+            'transform-origin': '0px 0px',
+        })
+        var x = (_flipBook.parent().width() - _flipBook.width() * _fit * _zoom) / 2
+        var y = (_flipBook.parent().height() - _flipBook.height() * _fit * _zoom) / 2
+        if(zoomCenter) {
+            var cx = (_w-zoomCenter.x) * _fit * _zoom
+            x += cx
+            var cy = (_h/2-zoomCenter.y) * _fit * _zoom
+            y += cy
+        }
+        _flipBook.css({
+            'left': x,
+            'top': y,
         })
     }
 
     function viewSides(s) {
-        if(!s) return _viewSides
-        if(_viewSides==s) return
+        if (!s) return _viewSides
+        if (_viewSides == s) return
 
-        _viewSides=s
+        _viewSides = s
         $('#page4,#page5,#page6').parent().css({
-            'left' : _w * (_viewSides-1) // for double view mode, left will be _w, or 0
+            'left': _w * (_viewSides - 1) // for double view mode, left will be _w, or 0
         })
-        $('#fb').css ({
+        $('#fb').css({
             width: _w * _viewSides
         })
-        $('.edge-right').css ({
-            left:(_w*(_viewSides-_edge))+'px',
+        $('.edge-right').css({
+            left: (_w * (_viewSides - _edge)) + 'px',
         })
         transformFlipBook()
 
-        if(_viewSides==2) {
+        if (_viewSides == 2) {
             loadFlipPage2()
             $('#fb').removeClass('fb-single')
             $('#page3').parent().show()
         }
-        else  {
+        else {
             loadFlipPage1()
             $('#fb').addClass('fb-single')
             $('#page3').parent().hide()
@@ -978,23 +1035,25 @@ var Flip = function(){
     }
 
     return {
-        make : make,
-        startFlip : startFlip,
-        endFlip : endFlip,
-        reform : reformFlipper,
-        ease : ease,
-        made : made,
-        replace : replace,
-        loadFlipPage : loadFlipPage,
-        flipNext : flipNext,
-        flipPrevious : flipPrevious,
-        handleIframeMouseMove : handleIframeMouseMove,
-        fit: function(scale){ if(scale) fitScale(scale); else return _fit},
+        make: make,
+        startFlip: startFlip,
+        endFlip: endFlip,
+        reform: reformFlipper,
+        ease: ease,
+        made: made,
+        replace: replace,
+        loadFlipPage: loadFlipPage,
+        flipNext: flipNext,
+        flipPrevious: flipPrevious,
+        handleIframeMouseMove: handleIframeMouseMove,
+        fit: function (scale) {
+            if (scale) fitScale(scale); else return _fit
+        },
         zoom: zoom,
-        viewSides : viewSides,
-        handleIframeTouchMove:handleIframeTouchMove,
-        handleIframeTouchEnd:handleIframeTouchEnd,
-        iframeScrollEnabled:iframeScrollEnabled,
+        viewSides: viewSides,
+        handleIframeTouchMove: handleIframeTouchMove,
+        handleIframeTouchEnd: handleIframeTouchEnd,
+        iframeScrollEnabled: iframeScrollEnabled,
     }
     // iframe load function for event bubbling
     // 현재로서는 사용안함
