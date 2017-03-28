@@ -592,6 +592,7 @@
         })
     })
     $('.nav-last').bind('click',function(){
+        console.log(_book.totalPages)
         _book.go(_book.totalPages, function(){
             _flip.loadFlipPage()
         })

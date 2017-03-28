@@ -898,6 +898,7 @@ var Flip = function(){
 
             }
         }
+        ev.preventDefault()
     }
     function handleIframeTouchEnd(ev) {
         _toucheEvent=undefined
